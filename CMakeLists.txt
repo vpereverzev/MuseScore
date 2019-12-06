@@ -746,6 +746,7 @@ subdirs(
       effects thirdparty/rtf2html thirdparty/beatroot
       thirdparty/qzip thirdparty/kQOAuth
       )
+add_subdirectory(global)
 
 if (BUILD_CRASH_REPORTER)
       set(ENABLE_CRASH_REPORTER OFF CACHE BOOL "Disable libcrashreporter-qt GUI component")
