@@ -23,6 +23,7 @@
 #include "musescore.h"
 #include "navigator.h"
 #include "preferences.h"
+#include "scoreaccessibility.h"
 #include "scoretab.h"
 #include "seq.h"
 #include "splitstaff.h"
@@ -1788,14 +1789,8 @@ void ScoreView::cmd(const char* s)
       if (cmd == "escape")
             escapeCmd();
       else if (cmd == "note-input") {
-            if (state == ViewState::NORMAL) {
+            if (state == ViewState::NORMAL)
                   changeState(ViewState::NOTE_ENTRY);
-                  TDuration td = _score->inputState().duration();
-                  if (!td.isValid() || td.isZero() || td.isMeasure())
-                        _score->inputState().setDuration(TDuration::DurationType::V_QUARTER);
-                  _score->inputState().setAccidentalType(AccidentalType::NONE);
-                  _score->inputState().setRest(false);
-                  }
             else if (state == ViewState::NOTE_ENTRY)
                   changeState(ViewState::NORMAL);
             }
@@ -2144,6 +2139,25 @@ void ScoreView::cmd(const char* s)
       else if (cmd == "last-element") {
             cmdGotoElement(score()->lastElement(false));
             }
+      else if (cmd == "get-location") {
+            // get current selection
+            Element* e = score()->selection().element();
+            if (!e) {
+                  // no current selection - restore lost selection
+                  e = score()->selection().currentCR();
+                  if (e && e->isChord())
+                        e = toChord(e)->upNote();
+                  }
+            if (!e) {
+                  // no current or last selection - fall back to first element
+                  e = score()->firstElement(false);
+                  }
+            // TODO: find & read current key & time signatures
+            if (e) {
+                  ScoreAccessibility::instance()->clearAccessibilityInfo();
+                  cmdGotoElement(e);
+                  }
+            }
       else if (cmd == "rest" || cmd == "rest-TAB")
             cmdEnterRest();
       else if (cmd == "rest-1")
@@ -2164,8 +2178,12 @@ void ScoreView::cmd(const char* s)
                   }
             }
       else if (cmd == "tie") {
-            _score->cmdAddTie();
-            moveCursor();
+            if (noteEntryMode()) {
+                  _score->cmdAddTie();
+                  moveCursor();
+                  }
+            else
+                  _score->cmdToggleTie();
             }
       else if (cmd == "chord-tie") {
             _score->cmdAddTie(true);
@@ -2684,6 +2702,7 @@ void ScoreView::startNoteEntry()
       TDuration d(is.duration());
       if (!d.isValid() || d.isZero() || d.type() == TDuration::DurationType::V_MEASURE)
             is.setDuration(TDuration(TDuration::DurationType::V_QUARTER));
+      is.setAccidentalType(AccidentalType::NONE);
 
       _score->select(el, SelectType::SINGLE, 0);
       is.setRest(false);
@@ -2969,7 +2988,7 @@ void ScoreView::screenNext()
       qreal y { yoffset() };
       if (score()->layoutMode() == LayoutMode::LINE) {
             x -= width() * scrollStep;
-            MeasureBase* lm = score()->last();
+            MeasureBase* lm = score()->lastMeasureMM();
             // Vertical frames aren't laid out in continuous view
             while (lm->isVBoxBase())
                   lm = lm->prev();
@@ -2979,7 +2998,7 @@ void ScoreView::screenNext()
             }
       else {
             y -= height() * scrollStep;
-            MeasureBase* lm { score()->last() };
+            MeasureBase* lm { score()->lastMeasureMM() };
             qreal ly { (lm->canvasPos().y() + lm->height()) * mag() - height() * scrollStep };
             // Special case to jump to top of next page in horizontal view.
             if (score()->layoutMode() == LayoutMode::PAGE && !MScore::verticalOrientation()
@@ -3049,7 +3068,7 @@ void ScoreView::screenPrev()
                   // The condition prevents jumping to the bottom of the
                   // first page after reaching the top
                   if (x < thinPadding + (page->width() + thickPadding) * mag()) {
-                        MeasureBase* lm { score()->last() };
+                        MeasureBase* lm { score()->lastMeasureMM() };
                         y = -(lm->canvasPos().y() + lm->height()) * mag() + height() * scrollStep;
                         }
                   if (x > thinPadding)
@@ -3083,7 +3102,7 @@ void ScoreView::pageEnd()
       {
       if (score()->pages().empty())
             return;
-      MeasureBase* lm = score()->last();
+      MeasureBase* lm = score()->lastMeasureMM();
       if (score()->layoutMode() == LayoutMode::LINE) {
             // Vertical frames aren't laid out in continuous view
             while (lm->isVBoxBase())
@@ -3097,7 +3116,7 @@ void ScoreView::pageEnd()
                   for (int i { 0 }; i < score()->npages() - 1; ++i)
                         lx += score()->pages().at(i)->width() * mag();
                   }
-            if (lm->system()->page()->width() * mag() > width())
+            if (lm->system() && lm->system()->page()->width() * mag() > width())
                   lx = (lm->canvasPos().x() + lm->width()) * mag() - width() * scrollStep;
 
             qreal ly { (lm->canvasPos().y() + lm->height()) * mag() - height() * scrollStep };
@@ -3437,13 +3456,16 @@ void ScoreView::startUndoRedo(bool undo)
 //    command invoked, or icon double clicked
 //---------------------------------------------------------
 
-void ScoreView::addSlur()
+void ScoreView::addSlur(const Slur* slurTemplate)
       {
       InputState& is = _score->inputState();
       if (noteEntryMode() && is.slur()) {
             const std::vector<SpannerSegment*>& el = is.slur()->spannerSegments();
-            if (!el.empty())
+            if (!el.empty()) {
                   el.front()->setSelected(false);
+                  // Now make sure that the slur segment is redrawn so that it does not *look* selected
+                  update();
+                  }
             is.setSlur(nullptr);
             return;
             }
@@ -3472,7 +3494,7 @@ void ScoreView::addSlur()
                               cr2 = cr;
                         }
                   if (cr1 && (cr1 != cr2))
-                        cmdAddSlur(cr1, cr2);
+                        cmdAddSlur(cr1, cr2, slurTemplate);
                   }
             }
       else {
@@ -3492,7 +3514,7 @@ void ScoreView::addSlur()
             if (cr1 == cr2)
                   cr2 = 0;
             if (cr1)
-                  cmdAddSlur(cr1, cr2);
+                  cmdAddSlur(cr1, cr2, slurTemplate);
             }
       }
 
@@ -3500,7 +3522,7 @@ void ScoreView::addSlur()
 //   cmdAddSlur
 //---------------------------------------------------------
 
-void ScoreView::cmdAddSlur(ChordRest* cr1, ChordRest* cr2)
+void ScoreView::cmdAddSlur(ChordRest* cr1, ChordRest* cr2, const Slur* slurTemplate)
       {
       bool startEditMode = false;
       if (cr2 == 0) {
@@ -3512,7 +3534,8 @@ void ScoreView::cmdAddSlur(ChordRest* cr1, ChordRest* cr2)
 
       _score->startCmd();
 
-      Slur* slur = new Slur(cr1->score());
+      Slur* slur = slurTemplate ? slurTemplate->clone() : new Slur(cr1->score());
+      slur->setScore(cr1->score());
       slur->setTick(cr1->tick());
       slur->setTick2(cr2->tick());
       slur->setTrack(cr1->track());
@@ -3732,8 +3755,10 @@ void ScoreView::cloneElement(Element* e)
             e = toSpannerSegment(e)->spanner();
       mimeData->setData(mimeSymbolFormat, e->mimeData(QPointF()));
       drag->setMimeData(mimeData);
-      drag->setPixmap(QPixmap());
-      drag->start(Qt::CopyAction);
+      static QPixmap pixmap = QPixmap(2, 2);    // null or 1x1 crashes on Linux under ChromeOS?!
+      pixmap.fill(Qt::white);
+      drag->setPixmap(pixmap);
+      drag->exec(Qt::CopyAction);
       }
 
 //---------------------------------------------------------
@@ -4206,7 +4231,7 @@ MeasureBase* ScoreView::appendMeasure(ElementType type)
       {
       _score->startCmd();
       _score->insertMeasure(type, 0);
-      MeasureBase* mb = _score->last();
+      MeasureBase* mb = _score->lastMeasureMM();
       _score->endCmd();
       return mb;
       }
@@ -4854,8 +4879,8 @@ static bool needViewportMove(Score* cs, ScoreView* cv)
       mEnd = mEnd ? mEnd->nextMeasureMM() : nullptr;
 
       const bool isExcerpt = !cs->isMaster();
-      const int startStaff = (isExcerpt || state.startStaff() == -1) ? 0 : state.startStaff();
-      const int endStaff = (isExcerpt || state.endStaff() == -1) ? (cs->nstaves() - 1) : state.endStaff();
+      const int startStaff = (isExcerpt || state.startStaff() < 0) ? 0 : state.startStaff();
+      const int endStaff = (isExcerpt || state.endStaff() < 0) ? (cs->nstaves() - 1) : state.endStaff();
 
       for (Measure* m = mStart; m && m != mEnd; m = m->nextMeasureMM()) {
             for (int st = startStaff; st <= endStaff; ++st) {
@@ -4896,14 +4921,27 @@ void ScoreView::moveViewportToLastEdit()
       const Element* editElement = visibleElementInScore(st.element(), sc);
 
       const MeasureBase* mb = nullptr;
-      if (editElement)
-            mb = editElement->findMeasureBase();
+      if (editElement) {
+            if (editElement->isSpannerSegment()) {
+                  const SpannerSegment* s = toSpannerSegment(editElement);
+                  Fraction tick = s->tick();
+                  if (System* sys = s->system()) {
+                        Measure* fm = sys->firstMeasure();
+                        if (fm)
+                              tick = std::max(tick, fm->tick());
+                        }
+                  mb = sc->tick2measureMM(tick);
+                  }
+            else {
+                  mb = editElement->findMeasureBase();
+                  }
+            }
       if (!mb)
             mb = sc->tick2measureMM(st.startTick());
 
       const Element* viewportElement = (editElement && editElement->bbox().isValid() && !mb->isMeasure()) ? editElement : mb;
 
-      const int staff = sc->isMaster() ? st.startStaff() : -1; // TODO: choose the closest staff to the current viewport?
+      const int staff = sc->isMaster() && mb->isMeasure() ? st.startStaff() : -1; // TODO: choose the closest staff to the current viewport?
       adjustCanvasPosition(viewportElement, /* playback */ false, staff);
       }
 }

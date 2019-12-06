@@ -92,7 +92,8 @@ void CmdState::reset()
       _endStaff = -1;
       _el = nullptr;
       _oneElement = true;
-      _elIsMeasureBase = false;
+      _mb = nullptr;
+      _oneMeasureBase = true;
       _locked = false;
       }
 
@@ -118,6 +119,7 @@ void CmdState::setTick(const Fraction& t)
 
 void CmdState::setStaff(int st)
       {
+      Q_ASSERT(st > -2);
       if (_locked || st == -1)
             return;
 
@@ -125,6 +127,19 @@ void CmdState::setStaff(int st)
             _startStaff = st;
       if (_endStaff == -1 || st > _endStaff)
             _endStaff = st;
+      }
+
+//---------------------------------------------------------
+//   setMeasureBase
+//---------------------------------------------------------
+
+void CmdState::setMeasureBase(const MeasureBase* mb)
+      {
+      if (!mb || _mb == mb || _locked)
+            return;
+
+      _oneMeasureBase = !_mb;
+      _mb = mb;
       }
 
 //---------------------------------------------------------
@@ -136,20 +151,11 @@ void CmdState::setElement(const Element* e)
       if (!e || _el == e || _locked)
             return;
 
-      // prefer measures and frames as edit targets
-      const bool oldIsMeasureBase = _elIsMeasureBase;
-      const bool newIsMeasureBase = e->isMeasureBase();
-      if (newIsMeasureBase && !oldIsMeasureBase) {
-            _oneElement = true;
-            return;
-            }
-      else if (oldIsMeasureBase && !newIsMeasureBase)
-            return; // don't remember the new element
-      else
-            _oneElement = !_el;
-
+      _oneElement = !_el;
       _el = e;
-      _elIsMeasureBase = newIsMeasureBase;
+
+      if (_oneMeasureBase)
+            setMeasureBase(e->findMeasureBase());
       }
 
 //---------------------------------------------------------
@@ -160,6 +166,21 @@ void CmdState::unsetElement(const Element* e)
       {
       if (_el == e)
             _el = nullptr;
+      if (_mb == e)
+            _mb = nullptr;
+      }
+
+//---------------------------------------------------------
+//   element
+//---------------------------------------------------------
+
+const Element* CmdState::element() const
+      {
+      if (_oneElement)
+            return _el;
+      if (_oneMeasureBase)
+            return _mb;
+      return nullptr;
       }
 
 //---------------------------------------------------------
@@ -783,6 +804,11 @@ Segment* Score::setNoteRest(Segment* segment, int track, NoteVal nval, Fraction 
             connectTies();
       if (nr) {
             if (_is.slur() && nr->type() == ElementType::NOTE) {
+                  // If the start element was the same as the end element when the slur was created,
+                  // the end grip of the front slur segment was given an x-offset of 3.0 * spatium().
+                  // Now that the slur is about to be given a new end element, this should be reset.
+                  if (_is.slur()->endElement() == _is.slur()->startElement())
+                        _is.slur()->frontSegment()->reset();
                   //
                   // extend slur
                   //
@@ -1558,12 +1584,17 @@ void Score::upDown(bool up, UpDownMode mode)
 
             if ((oNote->pitch() != newPitch) || (oNote->tpc1() != newTpc1) || oNote->tpc2() != newTpc2) {
                   // remove accidental if present to make sure
-                  // user added accidentals are removed here.
-                  auto l = oNote->linkList();
-                  for (ScoreElement* e : l) {
-                        Note* ln = toNote(e);
-                        if (ln->accidental())
-                              undo(new RemoveElement(ln->accidental()));
+                  // user added accidentals are removed here
+                  // unless it's an octave change
+                  // in this case courtesy accidentals are preserved
+                  // because they're now harder to be re-entered due to the revised note-input workflow
+                  if (mode != UpDownMode::OCTAVE) {
+                        auto l = oNote->linkList();
+                        for (ScoreElement* e : l) {
+                              Note* ln = toNote(e);
+                              if (ln->accidental())
+                                    undo(new RemoveElement(ln->accidental()));
+                              }
                         }
                   undoChangePitch(oNote, newPitch, newTpc1, newTpc2);
                   }

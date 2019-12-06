@@ -596,6 +596,16 @@ void MuseScore::populateNoteInputMenu()
       }
 
 //---------------------------------------------------------
+//   notifyElementDraggedToScoreView
+//---------------------------------------------------------
+
+void MuseScore::notifyElementDraggedToScoreView()
+      {
+      if (paletteWidget)
+            paletteWidget->notifyElementDraggedToScoreView();
+      }
+
+//---------------------------------------------------------
 //   onLongOperationFinished
 //---------------------------------------------------------
 
@@ -617,12 +627,14 @@ bool MuseScore::importExtension(QString path)
             totalZipSize += fi.size;
 
       // check if extension path is writable and has enough space
-      QStorageInfo storage = QStorageInfo(preferences.getString(PREF_APP_PATHS_MYEXTENSIONS));
-      if (storage.isReadOnly()) {
+      const QString extensionsPath = preferences.getString(PREF_APP_PATHS_MYEXTENSIONS);
+      const QFileInfo extensionsDirInfo(extensionsPath);
+      if (!extensionsDirInfo.isWritable()) {
             if (!MScore::noGui)
-                  QMessageBox::critical(mscore, QWidget::tr("Import Extension File"), QWidget::tr("Cannot import extension on read-only storage: %1").arg(storage.displayName()));
+                  QMessageBox::critical(mscore, QWidget::tr("Import Extension File"), QWidget::tr("Cannot import extension on read-only storage: %1").arg(extensionsPath)); // TODO: on read-only *directory*
             return false;
             }
+      QStorageInfo storage = QStorageInfo(extensionsPath);
       if (totalZipSize >= storage.bytesAvailable()) {
             if (!MScore::noGui)
                   QMessageBox::critical(mscore, QWidget::tr("Import Extension File"), QWidget::tr("Cannot import extension: storage %1 is full").arg(storage.displayName()));
@@ -2953,7 +2965,6 @@ void MuseScore::showPlayPanel(bool visible)
             if (!visible)
                   return;
             playPanel = new PlayPanel(this);
-            connect(playPanel, SIGNAL(gainChange(float)),     synti, SLOT(setGain(float)));
             connect(playPanel, SIGNAL(metronomeGainChanged(float)), seq, SLOT(setMetronomeGain(float)));
             connect(playPanel, SIGNAL(relTempoChanged(double)),seq, SLOT(setRelTempo(double)));
             connect(playPanel, SIGNAL(posChange(int)),         seq, SLOT(seek(int)));
@@ -5470,6 +5481,15 @@ PaletteWorkspace* MuseScore::getPaletteWorkspace()
       }
 
 //---------------------------------------------------------
+//   qmlDockWidgets
+//---------------------------------------------------------
+
+std::vector<QmlDockWidget*> MuseScore::qmlDockWidgets()
+      {
+      return { paletteWidget };
+      }
+
+//---------------------------------------------------------
 //   midiNoteReceived
 //---------------------------------------------------------
 
@@ -7247,6 +7267,15 @@ int main(int argc, char* av[])
       qInstallMessageHandler(mscoreMessageHandler);
 #endif
 
+#ifdef Q_OS_WIN
+      if (!qEnvironmentVariableIsSet("QT_OPENGL_BUGLIST")) {
+            // Set custom OpenGL buglist to work around rendering issues
+            // on Windows 7 (#296682). This should also prevent crashes
+            // happening for some Intel GPUs due to outdated buglist in Qt 5.9.
+            qputenv("QT_OPENGL_BUGLIST", ":/data/win_opengl_buglist.json");
+            }
+#endif
+
       qRegisterMetaTypeStreamOperators<SessionStart>("SessionStart");
       qRegisterMetaTypeStreamOperators<MusicxmlExportBreaks>("MusicxmlExportBreaks");
       qRegisterMetaTypeStreamOperators<MuseScoreStyleType>("MuseScoreStyleType");
@@ -7726,7 +7755,7 @@ int main(int argc, char* av[])
                   setMscoreLocale(sw->language());
                   Workspace::writeGlobalToolBar();
                   Workspace::writeGlobalGUIState();
-                  Workspace* targetWorkspace = WorkspacesManager::findByName(sw->workspace());
+                  Workspace* targetWorkspace = WorkspacesManager::visibleWorkspaces()[0];
                   if (targetWorkspace)
                         mscore->changeWorkspace(targetWorkspace, true);
                   
@@ -7822,6 +7851,8 @@ int main(int argc, char* av[])
       if (mscore->hasToCheckForExtensionsUpdate())
             mscore->checkForExtensionsUpdate();
 
+      if (QWidget* menubar = mscore->menuWidget())
+            TourHandler::addWidgetToTour("welcome", menubar, "menubar");
 
       if (!scoresOnCommandline && preferences.getBool(PREF_UI_APP_STARTUP_SHOWSTARTCENTER) && (!restoredSession || mscore->scores().size() == 0)) {
 #ifdef Q_OS_MAC

@@ -784,8 +784,8 @@ void Score::cmdAddTimeSig(Measure* fm, int staffIdx, TimeSig* ts, bool local)
             for (int si = 0; si < n; ++si) {
                   TimeSig* nsig = toTimeSig(seg->element(si * VOICES));
                   nsig->undoChangeProperty(Pid::SHOW_COURTESY, ts->showCourtesySig());
-                  nsig->undoChangeProperty(Pid::TIMESIG_TYPE, int(ts->timeSigType()));
                   nsig->undoChangeProperty(Pid::TIMESIG, QVariant::fromValue(ts->sig()));
+                  nsig->undoChangeProperty(Pid::TIMESIG_TYPE, int(ts->timeSigType()));
                   nsig->undoChangeProperty(Pid::NUMERATOR_STRING, ts->numeratorString());
                   nsig->undoChangeProperty(Pid::DENOMINATOR_STRING, ts->denominatorString());
                   nsig->undoChangeProperty(Pid::TIMESIG_STRETCH, QVariant::fromValue(ts->stretch()));
@@ -1204,26 +1204,34 @@ void Score::regroupNotesAndRests(const Fraction& startTick, const Fraction& endT
       }
 
 //---------------------------------------------------------
+//   cmdTieNoteList
+//---------------------------------------------------------
+
+std::vector<Note*> Score::cmdTieNoteList(const Selection& selection, bool noteEntryMode)
+      {
+      Element* el = selection.element();
+      if (Note* n = InputState::note(el)) {
+            if (noteEntryMode)
+                  return n->chord()->notes();
+            else
+                  return { n };
+            }
+      else {
+            ChordRest* cr = InputState::chordRest(el);
+            if (cr && cr->isChord())
+                  return toChord(cr)->notes();
+            }
+      return selection.noteList();
+      }
+
+//---------------------------------------------------------
 //   cmdAddTie
 //---------------------------------------------------------
 
 void Score::cmdAddTie(bool addToChord)
       {
-      std::vector<Note*> noteList;
-      Element* el = selection().element();
-      if (el && el->isNote()) {
-            Note* n = toNote(el);
-            if (noteEntryMode())
-                  noteList = n->chord()->notes();
-            else
-                  noteList.push_back(n);
-            }
-      else if (el && el->isStem()) {
-            Chord* chord = toStem(el)->chord();
-            noteList = chord->notes();
-            }
-      else
-            noteList = selection().noteList();
+      const std::vector<Note*> noteList = cmdTieNoteList(selection(), noteEntryMode());
+
       if (noteList.empty()) {
             qDebug("no notes selected");
             return;
@@ -1324,6 +1332,66 @@ tie->setTicks(note2->chord()->segment()->tick() - note->chord()->segment()->tick
             nextInputPos(lastAddedChord, false);
       endCmd();
       }
+
+//---------------------------------------------------------
+//   cmdRemoveTie
+//---------------------------------------------------------
+
+void Score::cmdToggleTie()
+      {
+      const std::vector<Note*> noteList = cmdTieNoteList(selection(), noteEntryMode());
+
+      if (noteList.empty()) {
+            qDebug("no notes selected");
+            return;
+            }
+
+      bool canAddTies = false;
+      const size_t notes = noteList.size();
+      std::vector<Note*> tieNoteList(notes);
+
+      for (size_t i = 0; i < notes; ++i) {
+            Note* n = noteList[i];
+            if (n->tieFor()) {
+                  tieNoteList[i] = nullptr;
+                  }
+            else {
+                  Note* tieNote = searchTieNote(n);
+                  tieNoteList[i] = tieNote;
+                  if (tieNote)
+                        canAddTies = true;
+                  }
+            }
+
+      startCmd();
+
+      if (canAddTies) {
+            for (size_t i = 0; i < notes; ++i) {
+                  Note* note2 = tieNoteList[i];
+                  if (note2) {
+                        Note* note = noteList[i];
+
+                        Tie* tie = new Tie(this);
+                        tie->setStartNote(note);
+                        tie->setEndNote(note2);
+                        tie->setTrack(note->track());
+                        tie->setTick(note->chord()->segment()->tick());
+                        tie->setTicks(note2->chord()->segment()->tick() - note->chord()->segment()->tick());
+                        undoAddElement(tie);
+                        }
+                  }
+            }
+      else {
+            for (Note* n : noteList) {
+                  Tie* tie = n->tieFor();
+                  if (tie)
+                        undoRemoveElement(tie);
+                  }
+            }
+
+      endCmd();
+      }
+
 
 //---------------------------------------------------------
 //   cmdAddOttava
@@ -2162,7 +2230,7 @@ void Score::deleteAnnotationsFromRange(Segment* s1, Segment* s2, int track1, int
       for (int track = track1; track < track2; ++track) {
             if (!filter.canSelectVoice(track))
                   continue;
-            for (Segment* s = s1; s != s2; s = s->next1()) {
+            for (Segment* s = s1; s && s != s2; s = s->next1()) {
                   const auto annotations = s->annotations(); // make a copy since we alter the list
                   for (Element* annotation : annotations) {
                         // skip if not included in selection (eg, filter)
@@ -4523,9 +4591,10 @@ void Score::undoAddElement(Element* element)
                         Spanner* sp   = toSpanner(element);
                         Spanner* nsp  = toSpanner(ne);
                         int staffIdx1 = sp->track() / VOICES;
-                        int staffIdx2 = sp->track2() / VOICES;
+                        int tr2 = sp->effectiveTrack2();
+                        int staffIdx2 = tr2 / VOICES;
                         int diff      = staffIdx2 - staffIdx1;
-                        nsp->setTrack2((staffIdx + diff) * VOICES + (sp->track2() % VOICES));
+                        nsp->setTrack2((staffIdx + diff) * VOICES + (tr2 % VOICES));
                         nsp->setTrack(ntrack);
 
 #if 0 //whatdoesitdo?

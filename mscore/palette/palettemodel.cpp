@@ -24,6 +24,7 @@
 #include "libmscore/icon.h"
 #include "libmscore/select.h"
 #include "palettetree.h"
+#include "palette.h"
 #include "preferences.h"
 #include "scoreaccessibility.h"
 
@@ -261,7 +262,7 @@ QVariant PaletteTreeModel::data(const QModelIndex& index, int role) const
                   case EditableRole:
                         return pp->editable();
                   case GridSizeRole:
-                        return pp->gridSize();
+                        return pp->gridSize() * Palette::guiMag();
                   case DrawGridRole:
                         return pp->drawGrid();
                   case PaletteExpandedRole:
@@ -289,7 +290,7 @@ QVariant PaletteTreeModel::data(const QModelIndex& index, int role) const
                         qreal extraMag = 1.0;
                         if (const PalettePanel* pp = iptrToPalettePanel(index.internalPointer()))
                               extraMag = pp->mag();
-                        return QIcon(new PaletteCellIconEngine(cell, extraMag));
+                        return QIcon(new PaletteCellIconEngine(cell, extraMag * Palette::guiMag()));
                         }
                   case PaletteCellRole:
                         return QVariant::fromValue(cell.get());
@@ -386,6 +387,10 @@ bool PaletteTreeModel::setData(const QModelIndex& index, const QVariant& value, 
                               return true;
                               }
                         return false;
+                  case Qt::DisplayRole:
+                        pp->setName(value.toString());
+                        emit dataChanged(index, index, { Qt::DisplayRole, Qt::AccessibleTextRole });
+                        return true;
 //                   case CustomRole:
 //                         if (value.canConvert<bool>()) {
 //                               const bool val = value.toBool();
@@ -396,9 +401,6 @@ bool PaletteTreeModel::setData(const QModelIndex& index, const QVariant& value, 
 //                               return true;
 //                               }
 //                         return false;
-//                   case Qt::DisplayRole:
-//                   case Qt::AccessibleTextRole:
-//                         return pp->name();
 //                   case gridSizeRole:
 //                         return pp->gridSize();
 //                   case drawGridRole:
@@ -749,6 +751,7 @@ bool PaletteTreeModel::insertRows(int row, int count, const QModelIndex& parent)
             for (int i = 0; i < count; ++i) {
                   std::unique_ptr<PalettePanel> p(new PalettePanel(PalettePanel::Type::Custom));
                   p->setName(QT_TRANSLATE_NOOP("Palette", "Custom"));
+                  p->setGrid(QSize(48, 48));
                   p->setExpanded(true);
                   palettes().insert(palettes().begin() + row, std::move(p));
                   }

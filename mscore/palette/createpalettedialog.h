@@ -1,8 +1,8 @@
 //=============================================================================
-//  MusE Score
-//  Linux Music Score Editor
+//  MuseScore
+//  Music Composition & Notation
 //
-//  Copyright (C) 2002-2009 Werner Schweer and others
+//  Copyright (C) 2019 MuseScore BVBA
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License version 2.
@@ -17,30 +17,31 @@
 //  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //=============================================================================
 
-#ifndef __SECTIONBREAKPROP_H__
-#define __SECTIONBREAKPROP_H__
+#ifndef __CREATEPALETTEDIALOG_H__
+#define __CREATEPALETTEDIALOG_H__
 
-#include "ui_sectionbreak.h"
+namespace Ui {
+      class CreatePaletteDialog;
+}
 
 namespace Ms {
-
-class LayoutBreak;
-
+      
 //---------------------------------------------------------
-//   SectionBreakProperties
+//   CreatePaletteDialog
 //---------------------------------------------------------
 
-class SectionBreakProperties : public QDialog, public Ui::SectionBreakProperties {
+class CreatePaletteDialog : public QDialog {
       Q_OBJECT
+      
+      Ui::CreatePaletteDialog* ui;
+      
+public:
+      CreatePaletteDialog(QWidget* parent = 0);
+      ~CreatePaletteDialog();
 
-      virtual void hideEvent(QHideEvent*);
-   public:
-      SectionBreakProperties(LayoutBreak*, QWidget* parent = 0);
-      double pause() const;
-      bool startWithLongNames() const;
-      bool startWithMeasureOne() const;
-      };
-
+      QString paletteName() const;
+};
 
 } // namespace Ms
-#endif
+
+#endif //__PALETTECELLDIALOGS_H__

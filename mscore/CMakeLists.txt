@@ -91,7 +91,7 @@ QT5_WRAP_UI (ui_headers
       transposedialog.ui excerptsdialog.ui  stafftext.ui tupletdialog.ui
       articulation.ui metaedit.ui paletteProperties.ui paletteCellProperties.ui selectdialog.ui selectnotedialog.ui
       synthcontrol.ui splitstaff.ui keyedit.ui selectinstr.ui
-      fretdprops.ui editstafftype.ui sectionbreak.ui  bend.ui tremolobar.ui
+      fretdprops.ui editstafftype.ui bend.ui tremolobar.ui
       editpitch.ui editstringdata.ui editraster.ui mediadialog.ui albummanager.ui layer.ui
       omrpanel.ui masterpalette.ui harmonyedit.ui pathlistdialog.ui
       note_groups.ui resourceManager.ui stafftypetemplates.ui
@@ -101,6 +101,7 @@ QT5_WRAP_UI (ui_headers
 
       importmidi/importmidi_panel.ui
 
+      palette/createPalette.ui
       scorecmp/scorecmp_tool.ui
       script/script_recorder.ui
 
@@ -187,6 +188,7 @@ QT5_WRAP_UI (ui_headers
       inspector/inspector_empty.ui
       inspector/inspector_fret.ui
       inspector/inspector_break.ui
+      inspector/inspector_sectionbreak.ui
       inspector/inspector_stafftypechange.ui
       inspector/inspector_bend.ui
       inspector/inspector_arpeggio.ui
@@ -349,7 +351,7 @@ add_executable ( ${ExecutableName}
       playpanel.h pm.h preferences.h preferenceslistwidget.h prefsdialog.h
       recordbutton.h resourceManager.h revision.h ruler.h scoreaccessibility.h
       scoreBrowser.h scoreInfo.h scorePreview.h scoretab.h scoreview.h searchComboBox.h
-      sectionbreakprop.h selectdialog.h selectionwindow.h selectnotedialog.h selinstrument.h
+      selectdialog.h selectionwindow.h selectnotedialog.h selinstrument.h
       seq.h shortcut.h shortcutcapturedialog.h simplebutton.h splitstaff.h stafftextproperties.h
       startcenter.h startupWizard.h stringutils.h svggenerator.h symboldialog.h synthcontrol.h
       templateBrowser.h textcursor.h textpalette.h texttools.h timedialog.h timeline.h timesigproperties.h
@@ -395,7 +397,7 @@ add_executable ( ${ExecutableName}
       stafftextproperties.cpp splitstaff.cpp
       tupletdialog.cpp
       articulationprop.cpp
-      fretproperties.cpp sectionbreakprop.cpp
+      fretproperties.cpp
       bendproperties.cpp tremolobarprop.cpp file.cpp keyb.cpp osc.cpp
       layer.cpp selectdialog.cpp selectnotedialog.cpp propertymenu.cpp shortcut.cpp bb.cpp
       dragelement.cpp startupWizard.cpp
@@ -472,6 +474,7 @@ add_executable ( ${ExecutableName}
       importmidi/importmidi_voice.cpp importmidi/importmidi_view.cpp importmidi/importmidi_key.cpp
       importmidi/importmidi_tempo.cpp importmidi/importmidi_instrument.cpp
       importmidi/importmidi_chordname.cpp
+      palette/createpalettedialog.cpp
       palette/palettedialog.cpp palette/palettecelldialog.cpp
       palette/palettemodel.cpp palette/palettetree.cpp palette/paletteworkspace.cpp palette/palettewidget.cpp
       scorecmp/scorecmp.cpp scorecmp/scorediffmodel.cpp scorecmp/scorelistmodel.cpp
@@ -689,6 +692,7 @@ if (MINGW)
       ${QT_INSTALL_BINS}/libEGL.dll
       ${QT_INSTALL_BINS}/libGLESv2.dll
       ${QT_INSTALL_BINS}/opengl32sw.dll
+      ${QT_INSTALL_BINS}/d3dcompiler_47.dll
       ${QtInstallLibraries}
       ${PROJECT_SOURCE_DIR}/build/qt.conf
       DESTINATION bin)
@@ -930,6 +934,7 @@ else (MINGW)
                   "${QT_INSTALL_BINS}/Qt5WebChannel.dll"
                   "${QT_INSTALL_BINS}/Qt5QuickWidgets.dll" "${QT_INSTALL_BINS}/Qt5Positioning.dll"
                   "${QT_INSTALL_BINS}/libEGL.dll" "${QT_INSTALL_BINS}/libGLESv2.dll" "${QT_INSTALL_BINS}/opengl32sw.dll"
+                  "${QT_INSTALL_BINS}/d3dcompiler_47.dll"
                   )
       if (USE_WEBENGINE)
          list(APPEND dlls_to_copy "${QT_INSTALL_BINS}/Qt5WebEngineWidgets.dll" "${QT_INSTALL_BINS}/Qt5WebEngineCore.dll")
@@ -998,6 +1003,7 @@ else (MINGW)
             ${QT_INSTALL_BINS}/libEGL.dll
             ${QT_INSTALL_BINS}/libGLESv2.dll
             ${QT_INSTALL_BINS}/opengl32sw.dll
+            ${QT_INSTALL_BINS}/d3dcompiler_47.dll
             ${QT_INSTALL_BINS}/Qt5Positioning.dll
             ${QT_INSTALL_BINS}/Qt5WebChannel.dll
             ${QT_INSTALL_BINS}/Qt5QuickTemplates2.dll
