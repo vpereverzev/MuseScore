@@ -107,6 +107,7 @@ class ScoreView : public QWidget, public MuseScoreView {
       const Element* dropTarget;    ///< current drop target during dragMove
       QRectF dropRectangle;         ///< current drop rectangle during dragMove
       QLineF dropAnchor;            ///< line to current anchor point during dragMove
+      QVector<QLineF> m_dropAnchorLines;
 
       QTransform _matrix, imatrix;
       MagIdx _magIdx;
@@ -351,7 +352,7 @@ class ScoreView : public QWidget, public MuseScoreView {
 
       virtual void setDropRectangle(const QRectF&);
       virtual void setDropTarget(const Element*) override;
-      void setDropAnchor(const QLineF&);
+      void setDropAnchorLines(const QVector<QLineF> &anchorList);
       const QTransform& matrix() const  { return _matrix; }
       qreal mag() const;
       qreal lmag() const;
@@ -435,7 +436,9 @@ class ScoreView : public QWidget, public MuseScoreView {
       void updateGrips();
       bool moveWhenInactive() const { return _moveWhenInactive; }
       bool moveWhenInactive(bool move) { bool m = _moveWhenInactive; _moveWhenInactive = move; return m; }
-      };
+   private:
+      void drawAnchorLines(QPainter& painter);
+    };
 
 } // namespace Ms
 #endif
