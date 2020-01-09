@@ -44,7 +44,7 @@ class Arpeggio final : public Element {
       void symbolLine2(SymId end, SymId fill);
 
       virtual void spatiumChanged(qreal /*oldValue*/, qreal /*newValue*/) override;
-      virtual QLineF dragAnchor() const override;
+      QVector<QLineF> dragAnchorLines() const override;
       virtual QPointF gripAnchor(Grip) const override;
       virtual void startEdit(EditData&) override;
 
