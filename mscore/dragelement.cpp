@@ -75,6 +75,8 @@ void ScoreView::doDragElement(QMouseEvent* ev)
                   mscore->play(e);
                   _score->setPlayNote(false);
                   }
+            _score->update();
+
             QVector<QLineF> anchorLines = e->dragAnchorLines();
 
             if (!anchorLines.isEmpty())
@@ -98,6 +100,7 @@ void ScoreView::endDrag()
             }
       setDropTarget(0); // this also resets dropAnchor
       _score->endCmd();
+      updateGrips();
       if (editData.element->normalModeEditBehavior() == Element::EditBehavior::Edit && _score->selection().element() == editData.element)
             startEdit(/* editMode */ false);
       }
