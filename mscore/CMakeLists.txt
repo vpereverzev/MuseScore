@@ -46,6 +46,8 @@ include_directories(
       ${PROJECT_SOURCE_DIR}
       ${PROJECT_SOURCE_DIR}/thirdparty
       ${PROJECT_SOURCE_DIR}/global
+      ${PROJECT_SOURCE_DIR}/inspectors
+      ${PROJECT_BINARY_DIR}
       ${QTSINGLEAPPLICATION_INCLUDE_DIRS}
       )
 
@@ -145,73 +147,6 @@ QT5_WRAP_UI (ui_headers
       debugger/system.ui
       debugger/timesig.ui
       debugger/bracket.ui
-
-      inspector/inspector_element.ui
-      inspector/inspector_vbox.ui
-      inspector/inspector_tbox.ui
-      inspector/inspector_articulation.ui
-      inspector/inspector_spacer.ui
-      inspector/inspector_hbox.ui
-      inspector/inspector_segment.ui
-      inspector/inspector_beam.ui
-      inspector/inspector_note.ui
-      inspector/inspector_notedot.ui
-      inspector/inspector_rest.ui
-      inspector/inspector_chord.ui
-      inspector/inspector_group_element.ui
-      inspector/inspector_image.ui
-      inspector/inspector_harmony.ui
-      inspector/inspector_lasso.ui
-      inspector/inspector_volta.ui
-      inspector/inspector_ottava.ui
-      inspector/inspector_trill.ui
-      inspector/inspector_vibrato.ui
-      inspector/inspector_hairpin.ui
-      inspector/inspector_jump.ui
-      inspector/inspector_marker.ui
-      inspector/inspector_glissando.ui
-      inspector/inspector_clef.ui
-      inspector/inspector_timesig.ui
-      inspector/inspector_keysig.ui
-      inspector/inspector_barline.ui
-      inspector/inspector_tuplet.ui
-      inspector/inspector_accidental.ui
-      inspector/inspector_tempotext.ui
-      inspector/inspector_dynamic.ui
-      inspector/inspector_instrchange.ui
-      inspector/inspector_lyric.ui
-      inspector/inspector_line.ui
-      inspector/inspector_textline.ui
-      inspector/inspector_letring.ui
-      inspector/inspector_palmmute.ui
-      inspector/inspector_pedal.ui
-      inspector/inspector_textlinebase.ui
-      inspector/inspector_slur.ui
-      inspector/inspector_text.ui
-      inspector/inspector_stafftext.ui
-      inspector/inspector_ambitus.ui
-      inspector/inspector_empty.ui
-      inspector/inspector_fret.ui
-      inspector/inspector_break.ui
-      inspector/inspector_sectionbreak.ui
-      inspector/inspector_stafftypechange.ui
-      inspector/inspector_bend.ui
-      inspector/inspector_arpeggio.ui
-      inspector/inspector_tremolo.ui
-      inspector/inspector_tremolobar.ui
-      inspector/inspector_caesura.ui
-      inspector/inspector_bracket.ui
-      inspector/inspector_iname.ui
-      inspector/inspector_fingering.ui
-      inspector/inspector_frametext.ui
-      inspector/inspector_fermata.ui
-      inspector/align_select.ui
-      inspector/font_style_select.ui
-      inspector/offset_select.ui
-      inspector/voicing_select.ui
-      inspector/scale_select.ui
-      inspector/size_select.ui
-      inspector/inspector_stem.ui
       ${SCRIPT_UI}
       )
 
@@ -310,13 +245,13 @@ add_library(mscoreapp STATIC
 
       abstractdialog.h accessibletoolbutton.h albummanager.h
       alsa.h alsamidi.h analyse.h articulationprop.h bb.h
-      bendcanvas.h breaksdialog.h capella.h
+      breaksdialog.h capella.h
       chordview.h click.h continuouspanel.h downloadUtils.h
       driver.h drumroll.h drumtools.h drumview.h editdrumset.h
       editinstrument.h editpitch.h editraster.h editstaff.h
       editstafftype.h editstringdata.h editstyle.h enableplayforwidget.h
       exampleview.h excerptsdialog.h exportmidi.h exportmp3.h extension.h
-      file.h fotomode.h fretcanvas.h globals.h greendotbutton.h
+      file.h fotomode.h globals.h greendotbutton.h
       harmonycanvas.h harmonyedit.h help.h helpBrowser.h icons.h importgtp.h importmxml.h
       importmxmllogger.h importmxmlnoteduration.h importmxmlnotepitch.h importmxmlpass1.h
       importmxmlpass2.h importptb.h importxmlfirstpass.h instrdialog.h instrwidget.h jackaudio.h
@@ -336,7 +271,7 @@ add_library(mscoreapp STATIC
       seq.h shortcut.h shortcutcapturedialog.h simplebutton.h splitstaff.h stafftextproperties.h
       startcenter.h startupWizard.h stringutils.h svggenerator.h symboldialog.h synthcontrol.h
       templateBrowser.h textcursor.h textpalette.h texttools.h timedialog.h timeline.h timesigproperties.h
-      toolbarEditor.h toolbuttonmenu.h transposedialog.h tremolobarcanvas.h realizeharmonydialog.h
+      toolbarEditor.h toolbuttonmenu.h transposedialog.h realizeharmonydialog.h
       tupletdialog.h updatechecker.h uploadscoredialog.h waveview.h webpage.h workspace.h
 
       recordbutton.h greendotbutton prefsdialog.h prefsdialog.cpp
@@ -379,7 +314,6 @@ add_library(mscoreapp STATIC
       stafftextproperties.cpp splitstaff.cpp
       tupletdialog.cpp
       articulationprop.cpp
-      bendcanvas.cpp fretcanvas.cpp tremolobarcanvas.cpp
       file.cpp keyb.cpp osc.cpp
       layer.cpp selectdialog.cpp selectnotedialog.cpp propertymenu.cpp shortcut.cpp bb.cpp
       dragelement.cpp startupWizard.cpp
@@ -387,48 +321,6 @@ add_library(mscoreapp STATIC
       masterpalette.cpp
       dragdrop.cpp
       waveview.cpp helpBrowser.cpp
-      inspector/inspector.cpp
-      inspector/inspectorBase.cpp
-      inspector/inspectorBeam.cpp
-      inspector/inspectorBend.cpp
-      inspector/inspectorGroupElement.cpp
-      inspector/inspectorImage.cpp
-      inspector/inspectorHarmony.cpp
-      inspector/inspectorFret.cpp
-      inspector/inspectorText.cpp
-      inspector/inspectorMeasureNumber.cpp
-      inspector/inspectorLasso.cpp
-      inspector/inspectorBarline.cpp
-      inspector/inspectorVolta.cpp
-      inspector/inspectorOttava.cpp
-      inspector/inspectorTrill.cpp
-      inspector/inspectorVibrato.cpp
-      inspector/inspectorHairpin.cpp
-      inspector/inspectorJump.cpp
-      inspector/inspectorMarker.cpp
-      inspector/inspectorGlissando.cpp
-      inspector/inspectorNote.cpp
-      inspector/inspectorNoteDot.cpp
-      inspector/inspectorAmbitus.cpp
-      inspector/inspectorArpeggio.cpp
-      inspector/inspectorFingering.cpp
-      inspector/alignSelect.cpp
-      inspector/fontStyleSelect.cpp
-      inspector/offsetSelect.cpp
-      inspector/voicingSelect.cpp
-      inspector/scaleSelect.cpp
-      inspector/sizeSelect.cpp
-      inspector/inspectorTextBase.cpp
-      inspector/inspectorTextLineBase.cpp
-      inspector/inspectorTextLine.cpp
-      inspector/inspectorLetRing.cpp
-      inspector/inspectorPalmMute.cpp
-      inspector/inspectorPedal.cpp
-      inspector/inspectorDynamic.cpp
-      inspector/inspectorInstrchange.cpp
-      inspector/inspectorTremoloBar.cpp
-      inspector/inspectorElementBase.cpp
-      inspector/resetButton.cpp
       enableplayforwidget.cpp
       editelement.cpp
       editlyrics.cpp
@@ -487,7 +379,7 @@ add_library(mscoreapp STATIC
       ${SCRIPT_FILES}
       ${MAC_SPARKLE_FILES}
       driver.h
-      tremolobarcanvas.h bendcanvas.h fretcanvas.h keycanvas.h harmonycanvas.h
+      keycanvas.h harmonycanvas.h
 
       sparkle/autoUpdater.h sparkle/sparkleAutoUpdater.h sparkle/winSparkleAutoUpdater.h
       )
@@ -501,6 +393,7 @@ else (MSVC OR MINGW)
 endif (MSVC OR MINGW)
 
 target_link_libraries(mscoreapp
+      inspectors
       awl
       bww
       rtf2html
@@ -723,14 +616,6 @@ endif (NOT MSVC)
 
 add_library(
       inspectorplugin SHARED
-      inspector/inspectorplugin.cpp
-      inspector/inspectorplugin.h
-#      inspector/alignSelect.cpp
-      inspector/fontStyleSelect.cpp
-#      inspector/offsetSelect.cpp
-#      inspector/scaleSelect.cpp
-#      inspector/sizeSelect.cpp
-      inspector/resetButton.cpp
       icons.cpp
       miconengine.cpp
       ${qrc_files}
