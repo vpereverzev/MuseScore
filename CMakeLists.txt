@@ -789,6 +789,7 @@ if (BUILD_TELEMETRY_MODULE)
 endif (BUILD_TELEMETRY_MODULE)
 add_subdirectory(global)
 
+add_subdirectory(inspectors)
 add_subdirectory(mscore)
 add_subdirectory(main)
 
