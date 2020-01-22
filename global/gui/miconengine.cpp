@@ -13,11 +13,13 @@
 // this is a modified version of qt QSvgIconEngine
 
 #include "miconengine.h"
-#include "preferences.h"
+#include "settings/types/preferencekeys.h"
 
 //---------------------------------------------------------
 //   MIconEnginePrivate
 //---------------------------------------------------------
+
+QString MIconEngine::iconDirPath = QString();
 
 class MIconEnginePrivate : public QSharedData
       {
@@ -119,48 +121,61 @@ void MIconEnginePrivate::loadDataForModeAndState(QSvgRenderer* renderer, QIcon::
             if (!svgFile.isEmpty()) {
                   QFile f(svgFile);
                   f.open(QIODevice::ReadOnly);
+
+                  QSettings preferences;
+
+                  bool isThemeDark = preferences.value(PREF_UI_APP_GLOBALSTYLE).toBool();
+
                   QByteArray ba = f.readAll();
                   if (mode == QIcon::Disabled) {
-                        if (Ms::preferences.isThemeDark()) {
+                        if (isThemeDark) {
                               if (state == QIcon::On) {
-                                    auto colorName = Ms::preferences.getColor(PREF_UI_BUTTON_HIGHLIGHT_COLOR_DISABLED_DARK_ON).name().toLatin1();
+                                    QColor color = preferences.value(PREF_UI_BUTTON_HIGHLIGHT_COLOR_DISABLED_DARK_ON).value<QColor>();
+                                    auto colorName = color.name().toLatin1();
                                     ba.replace("#3b3f45", colorName).replace("#3B3F45", colorName).replace("rgb(59,63,69)", colorName);
                                     }
                                     
                               else {
-                                    auto colorName = Ms::preferences.getColor(PREF_UI_BUTTON_HIGHLIGHT_COLOR_DISABLED_DARK_OFF).name().toLatin1();
+                                    QColor color = preferences.value(PREF_UI_BUTTON_HIGHLIGHT_COLOR_DISABLED_DARK_OFF).value<QColor>();
+                                    auto colorName = color.name().toLatin1();
                                     ba.replace("#3b3f45", colorName).replace("#3B3F45", colorName).replace("rgb(59,63,69)", colorName);
                                     }
                               }
                         else {
                               if (state == QIcon::On) {
-                                    auto colorName = Ms::preferences.getColor(PREF_UI_BUTTON_HIGHLIGHT_COLOR_DISABLED_LIGHT_ON).name().toLatin1();
+                                    QColor color = preferences.value(PREF_UI_BUTTON_HIGHLIGHT_COLOR_DISABLED_LIGHT_ON).value<QColor>();
+                                    auto colorName = color.name().toLatin1();
                                     ba.replace("#3b3f45", colorName).replace("#3B3F45", colorName).replace("rgb(59,63,69)", colorName);
                                     }
                               else {
-                                    auto colorName = Ms::preferences.getColor(PREF_UI_BUTTON_HIGHLIGHT_COLOR_DISABLED_LIGHT_OFF).name().toLatin1();
+                                    QColor color = preferences.value(PREF_UI_BUTTON_HIGHLIGHT_COLOR_DISABLED_LIGHT_OFF).value<QColor>();
+                                    auto colorName = color.name().toLatin1();
                                     ba.replace("#3b3f45", colorName).replace("#3B3F45", colorName).replace("rgb(59,63,69)", colorName);
                                     }
                               }
                         }
                   else {
-                        if (Ms::preferences.isThemeDark()) {
+                        if (isThemeDark) {
                               if (state == QIcon::On) {
-                                    auto colorName = Ms::preferences.getColor(PREF_UI_BUTTON_HIGHLIGHT_COLOR_ENABLED_DARK_ON).name().toLatin1();
+                                    QColor color = preferences.value(PREF_UI_BUTTON_HIGHLIGHT_COLOR_ENABLED_DARK_ON).value<QColor>();
+                                    auto colorName = color.name().toLatin1();
                                     ba.replace("#3b3f45", colorName).replace("#3B3F45", colorName).replace("rgb(59,63,69)", colorName);
                                     }
 			            else {
-                                    auto colorName = Ms::preferences.getColor(PREF_UI_BUTTON_HIGHLIGHT_COLOR_ENABLED_DARK_OFF).name().toLatin1();
+                                    QColor color = preferences.value(PREF_UI_BUTTON_HIGHLIGHT_COLOR_ENABLED_DARK_OFF).value<QColor>();
+                                    auto colorName = color.name().toLatin1();
                                     ba.replace("#3b3f45", colorName).replace("#3B3F45", colorName).replace("rgb(59,63,69)", colorName);
                                     }
                               }
                         else {
                               if (state == QIcon::On) {
-                                    auto colorName = Ms::preferences.getColor(PREF_UI_BUTTON_HIGHLIGHT_COLOR_ENABLED_LIGHT_ON).name().toLatin1();
+                                    QColor color = preferences.value(PREF_UI_BUTTON_HIGHLIGHT_COLOR_ENABLED_LIGHT_ON).value<QColor>();
+                                    auto colorName = color.name().toLatin1();
                                     ba.replace("#3b3f45", colorName).replace("#3B3F45", colorName).replace("rgb(59,63,69)", colorName);
                                     }
                               else {
-                                    auto colorName = Ms::preferences.getColor(PREF_UI_BUTTON_HIGHLIGHT_COLOR_ENABLED_LIGHT_OFF).name().toLatin1();
+                                    QColor color = preferences.value(PREF_UI_BUTTON_HIGHLIGHT_COLOR_ENABLED_LIGHT_OFF).value<QColor>();
+                                    auto colorName = color.name().toLatin1();
                                     ba.replace("#3b3f45", colorName).replace("#3B3F45", colorName).replace("rgb(59,63,69)", colorName);
                               }
                               }
