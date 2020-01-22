@@ -17,6 +17,7 @@
 
 #include <QtGui/qiconengine.h>
 #include <QtCore/qshareddata.h>
+#include "all.h"
 
 class MIconEnginePrivate;
 
@@ -27,6 +28,8 @@ class MIconEnginePrivate;
 class MIconEngine : public QIconEngine
       {
    public:
+      static QString iconDirPath;
+
       MIconEngine();
       MIconEngine(const MIconEngine &other);
       ~MIconEngine();

@@ -258,7 +258,7 @@ add_library(mscoreapp STATIC
       keycanvas.h keyedit.h layer.h licence.h
       logindialog.h network/loginmanager.h network/loginmanager_p.h
       magbox.h masterpalette.h
-      measureproperties.h mediadialog.h metaedit.h miconengine.h mididriver.h
+      measureproperties.h mediadialog.h metaedit.h mididriver.h
       mixer.h mixertrack.h mixertrackchannel.h mixertrackgroup.h mixertrackitem.h mixertrackpart.h mixerdetails.h musedata.h
       musescore.h musicxml.h musicxmlfonthandler.h musicxmlsupport.h navigator.h newwizard.h noteGroups.h
       omrpanel.h ove.h pa.h pagesettings.h palette.h partedit.h parteditbase.h
@@ -335,7 +335,6 @@ add_library(mscoreapp STATIC
       noteGroups.cpp
       pathlistdialog.cpp
       exampleview.cpp
-      miconengine.cpp
       importmidi/importmidi.cpp
       importmidi/importmidi_panel.cpp importmidi/importmidi_operations.cpp
       importmidi/importmidi_model.cpp importmidi/importmidi_delegate.cpp
@@ -617,7 +616,6 @@ endif (NOT MSVC)
 add_library(
       inspectorplugin SHARED
       icons.cpp
-      miconengine.cpp
       ${qrc_files}
       )
 
