@@ -2584,6 +2584,43 @@ void Chord::layoutSpanners(System* system, const Fraction& stick)
       }
 
 //---------------------------------------------------------
+//   isChordPlayable
+//   @note Now every related to chord element has it's own "PLAY" property,
+//         However, there is no way to control these properties outside the scope of the chord since the new inspector.
+//         So we'll use a chord as a proxy entity for "PLAY" property handling
+//---------------------------------------------------------
+
+bool Chord::isChordPlayable() const
+      {
+      if (!_notes.empty())
+            return _notes.front()->getProperty(Pid::PLAY).toBool();
+      else if (_tremolo)
+            return _tremolo->getProperty(Pid::PLAY).toBool();
+      else if (_arpeggio)
+            return _arpeggio->getProperty(Pid::PLAY).toBool();
+
+      return false;
+      }
+
+//---------------------------------------------------------
+//   setIsChordPlayable
+//---------------------------------------------------------
+
+void Chord::setIsChordPlayable(const bool isPlayable)
+      {
+      for (Note* note : _notes)
+          note->undoChangeProperty(Pid::PLAY, isPlayable);
+
+      if (_arpeggio)
+          _arpeggio->undoChangeProperty(Pid::PLAY, isPlayable);
+
+      if (_tremolo)
+          _arpeggio->undoChangeProperty(Pid::PLAY, isPlayable);
+
+      triggerLayout();
+      }
+
+//---------------------------------------------------------
 //   findNote
 //---------------------------------------------------------
 
@@ -2730,6 +2767,7 @@ QVariant Chord::getProperty(Pid propertyId) const
             case Pid::NO_STEM:        return noStem();
             case Pid::SMALL:          return small();
             case Pid::STEM_DIRECTION: return QVariant::fromValue<Direction>(stemDirection());
+            case Pid::PLAY: return isChordPlayable();
             default:
                   return ChordRest::getProperty(propertyId);
             }
@@ -2745,6 +2783,7 @@ QVariant Chord::propertyDefault(Pid propertyId) const
             case Pid::NO_STEM:        return false;
             case Pid::SMALL:          return false;
             case Pid::STEM_DIRECTION: return QVariant::fromValue<Direction>(Direction::AUTO);
+            case Pid::PLAY:           return true;
             default:
                   return ChordRest::propertyDefault(propertyId);
             }
@@ -2765,6 +2804,9 @@ bool Chord::setProperty(Pid propertyId, const QVariant& v)
                   break;
             case Pid::STEM_DIRECTION:
                   setStemDirection(v.value<Direction>());
+                  break;
+            case Pid::PLAY:
+                  setIsChordPlayable(v.toBool());
                   break;
             default:
                   return ChordRest::setProperty(propertyId, v);
@@ -3378,6 +3420,26 @@ Shape Chord::shape() const
       if (_spaceLw || _spaceRw)
             shape.addHorizontalSpacing(Shape::SPACING_GENERAL, -_spaceLw, _spaceRw);
       return shape;
+    }
+
+void Chord::undoChangeProperty(Pid id, const QVariant& newValue)
+    {
+    undoChangeProperty(id, newValue, propertyFlags(id));
+    }
+
+//---------------------------------------------------------
+//   undoChangeProperty
+//---------------------------------------------------------
+
+void Chord::undoChangeProperty(Pid id, const QVariant& newValue, PropertyFlags ps)
+      {
+      if (id == Pid::VISIBLE) {
+            processSiblings([=] (Element* element) {
+                  element->undoChangeProperty(id, newValue, ps);
+                  });
+            }
+
+      Element::undoChangeProperty(id, newValue, ps);
       }
 
 //---------------------------------------------------------
