@@ -122,6 +122,9 @@ class Chord final : public ChordRest {
       std::vector<Note*>& notes()                 { return _notes; }
       const std::vector<Note*>& notes() const     { return _notes; }
 
+      bool isChordPlayable() const;
+      void setIsChordPlayable(const bool isPlayable);
+
       // Chord has at least one Note
       Note* upNote() const;
       Note* downNote() const;
@@ -228,7 +231,10 @@ class Chord final : public ChordRest {
       QString accessibleExtraInfo() const override;
 
       Shape shape() const override;
-      };
+
+      void undoChangeProperty(Pid id, const QVariant& newValue);
+      void undoChangeProperty(Pid id, const QVariant &newValue, PropertyFlags ps) override;
+    };
 
 
 }     // namespace Ms
