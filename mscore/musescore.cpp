@@ -5987,7 +5987,7 @@ void MuseScore::cmd(QAction* a)
 //    Updates the UI after a possible score change.
 //---------------------------------------------------------
 
-void MuseScore::endCmd(bool undoRedo)
+void MuseScore::endCmd(const bool isCmdFromInspector, const bool undoRedo)
       {
 #ifdef SCRIPT_INTERFACE
       getPluginEngine()->beginEndCmd(this, undoRedo);
@@ -6076,7 +6076,10 @@ void MuseScore::endCmd(bool undoRedo)
       else {
             selectionChanged(SelState::NONE);
             }
-      updateInspector();
+
+      if (!isCmdFromInspector)
+           updateInspector();
+
       updatePaletteBeamMode();
 #ifdef SCRIPT_INTERFACE
       getPluginEngine()->endEndCmd(this);
