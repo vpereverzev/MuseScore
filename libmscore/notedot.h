@@ -39,7 +39,8 @@ class NoteDot final : public Element {
 
       Note* note() const { return parent()->isNote() ? toNote(parent()) : 0; }
       Rest* rest() const { return parent()->isRest() ? toRest(parent()) : 0; }
-      };
+      Element* elementBase() const override;
+    };
 
 
 }     // namespace Ms

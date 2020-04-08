@@ -40,7 +40,15 @@ Stem::Stem(Score* s)
       {
       initElementStyle(&stemStyle);
       resetProperty(Pid::USER_LEN);
-      }
+    }
+
+//---------------------------------------------------------
+//   elementBase
+//---------------------------------------------------------
+Element* Stem::elementBase() const
+    {
+    return parent();
+    }
 
 //---------------------------------------------------------
 //   vStaffIdx

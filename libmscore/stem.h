@@ -34,12 +34,13 @@ class Stem final : public Element {
       Stem(Score* = 0);
       Stem &operator=(const Stem&) = delete;
 
-      Stem* clone() const override        { return new Stem(*this); }
-      ElementType type() const override   { return ElementType::STEM; }
-      void draw(QPainter*) const override;
-      bool isEditable() const override    { return true; }
-      void layout() override;
-      void spatiumChanged(qreal /*oldValue*/, qreal /*newValue*/) override;
+      virtual Stem* clone() const override        { return new Stem(*this); }
+      virtual ElementType type() const override   { return ElementType::STEM; }
+      Element* elementBase() const override;
+      virtual void draw(QPainter*) const override;
+      virtual bool isEditable() const override    { return true; }
+      virtual void layout() override;
+      virtual void spatiumChanged(qreal /*oldValue*/, qreal /*newValue*/) override;
 
       void startEdit(EditData&) override;
       void editDrag(EditData&) override;

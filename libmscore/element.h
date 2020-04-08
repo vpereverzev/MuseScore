@@ -205,6 +205,7 @@ class Element : public ScoreElement {
       const Measure* findMeasure() const;
       MeasureBase* findMeasureBase();
       const MeasureBase* findMeasureBase() const;
+      virtual Element* elementBase() const { return const_cast<Element*>(this); }
 
       virtual bool isElement() const override { return true;        }
 
