@@ -2872,16 +2872,6 @@ bool Note::setProperty(Pid propertyId, const QVariant& v)
       }
 
 //---------------------------------------------------------
-//   undoChangeDotsVisible
-//---------------------------------------------------------
-
-void Note::undoChangeDotsVisible(bool v)
-      {
-      for (NoteDot* dot : _dots)
-            dot->undoChangeProperty(Pid::VISIBLE, QVariant(v));
-      }
-
-//---------------------------------------------------------
 //   propertyDefault
 //---------------------------------------------------------
 
