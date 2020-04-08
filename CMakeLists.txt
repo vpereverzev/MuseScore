@@ -789,9 +789,10 @@ if (BUILD_TELEMETRY_MODULE)
       add_subdirectory(telemetry)
       add_subdirectory(thirdparty/google_analytics)
 endif (BUILD_TELEMETRY_MODULE)
+add_subdirectory(inspectors)
+add_subdirectory(gui)
 add_subdirectory(global)
 
-add_subdirectory(inspectors)
 add_subdirectory(mscore)
 add_subdirectory(main)
 
