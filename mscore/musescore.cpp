@@ -3313,7 +3313,8 @@ void MuseScore::showInspector(bool visible)
       {
       QAction* a = getAction("inspector");
       if (!_inspector) {
-            _inspector = new Inspector();
+            _inspector = new Inspector(getQmlUiEngine());
+
             connect(_inspector, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
             connect(_inspector, &Inspector::propertyEditStarted, [this] (Element* element) {
                   if (element->isArticulation())
@@ -3322,6 +3323,10 @@ void MuseScore::showInspector(bool visible)
                       currentScoreView()->editTimeSigProperties(toTimeSig(element));
                   else if (element->isStaffText())
                       currentScoreView()->editStaffTextProperties(toStaffTextBase(element));
+            });
+            connect(_inspector, &Inspector::layoutUpdateRequested, [this] () {
+                 ScoreView* scoreView = currentScoreView();
+                 scoreView->updateGrips();
             });
             addDockWidget(Qt::RightDockWidgetArea, _inspector);
             }
