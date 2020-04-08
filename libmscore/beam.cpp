@@ -2212,6 +2212,17 @@ void Beam::setBeamDirection(Direction d)
             _up = d == Direction::UP;
       }
 
+void Beam::setAsFeathered(const bool slower)
+{
+    if (slower) {
+        undoChangeProperty(Pid::GROW_LEFT, 1.0);
+        undoChangeProperty(Pid::GROW_RIGHT, 0.0);
+    } else {
+        undoChangeProperty(Pid::GROW_LEFT, 0.0);
+        undoChangeProperty(Pid::GROW_RIGHT, 1.0);
+    }
+}
+
 //---------------------------------------------------------
 //   reset
 //---------------------------------------------------------
@@ -2283,24 +2294,15 @@ Element* Beam::drop(EditData& data)
       if (!data.dropElement->isIcon())
             return 0;
       Icon* e = toIcon(data.dropElement);
-      qreal g1;
-      qreal g2;
 
       if (e->iconType() == IconType::FBEAM1) {
-            g1 = 1.0;
-            g2 = 0.0;
+            setAsFeathered(true /*slower*/);
             }
       else if (e->iconType() == IconType::FBEAM2) {
-            g1 = 0.0;
-            g2 = 1.0;
+            setAsFeathered(false /*slower*/);
             }
       else
             return 0;
-      if (g1 != growLeft())
-            undoChangeProperty(Pid::GROW_LEFT, g1);
-      if (g2 != growRight())
-            undoChangeProperty(Pid::GROW_RIGHT, g2);
-      return 0;
       }
 
 //---------------------------------------------------------
