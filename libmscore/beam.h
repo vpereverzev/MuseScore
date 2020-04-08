@@ -106,7 +106,7 @@ class Beam final : public Element {
       void layoutGraceNotes();
       void layout();
 
-      const QVector<ChordRest*>& elements() { return _elements;  }
+      const QVector<ChordRest*>& elements() const { return _elements;  }
       void clear()                        { _elements.clear(); }
       bool empty() const                { return _elements.empty(); }
       bool contains(const ChordRest* cr) const { return std::find(_elements.begin(), _elements.end(), cr) != _elements.end(); }
@@ -127,8 +127,11 @@ class Beam final : public Element {
       void setBeamDirection(Direction d);
       Direction beamDirection() const     { return _direction; }
 
-      bool acceptDrop(EditData&) const override;
-      Element* drop(EditData&) override;
+      //!Note Unfortunately we have no FEATHERED_BEAM_MODE for now int Beam::Mode enum, so we'll handle this localy
+      void setAsFeathered(const bool slower);
+
+      virtual bool acceptDrop(EditData&) const override;
+      virtual Element* drop(EditData&) override;
 
       qreal growLeft() const              { return _grow1; }
       qreal growRight() const             { return _grow2; }
