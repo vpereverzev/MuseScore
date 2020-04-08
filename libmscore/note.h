@@ -320,6 +320,7 @@ class Note final : public Element {
       qreal bboxRightPos() const;
       qreal headBodyWidth() const;
 
+      void updateHeadGroup(const NoteHead::Group headGroup);
       NoteHead::Group headGroup() const   { return _headGroup; }
       NoteHead::Type headType() const     { return _headType;  }
       void setHeadGroup(NoteHead::Group val);
