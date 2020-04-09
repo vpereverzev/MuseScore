@@ -147,6 +147,8 @@ QT5_WRAP_UI (ui_headers
       debugger/system.ui
       debugger/timesig.ui
       debugger/bracket.ui
+
+      inspector/voicing_select.ui
       ${SCRIPT_UI}
       )
 
@@ -257,7 +259,7 @@ add_library(mscoreapp STATIC
       importmxmlpass2.h importptb.h importxmlfirstpass.h instrdialog.h instrwidget.h jackaudio.h
       keycanvas.h keyedit.h layer.h licence.h
       logindialog.h network/loginmanager.h network/loginmanager_p.h
-      magbox.h masterpalette.h
+      magbox.h masterpalette.h inspector/voicingSelect.h
       measureproperties.h mediadialog.h metaedit.h mididriver.h
       mixer.h mixertrack.h mixertrackchannel.h mixertrackgroup.h mixertrackitem.h mixertrackpart.h mixerdetails.h musedata.h
       musescore.h musicxml.h musicxmlfonthandler.h musicxmlsupport.h navigator.h newwizard.h noteGroups.h
@@ -335,6 +337,7 @@ add_library(mscoreapp STATIC
       noteGroups.cpp
       pathlistdialog.cpp
       exampleview.cpp
+      inspector/voicingSelect.cpp
       importmidi/importmidi.cpp
       importmidi/importmidi_panel.cpp importmidi/importmidi_operations.cpp
       importmidi/importmidi_model.cpp importmidi/importmidi_delegate.cpp
