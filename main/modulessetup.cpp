@@ -28,6 +28,8 @@
 #include "avsomr/avsomrsetup.h"
 #endif
 
+#include "inspectors/inspectorssetup.h"
+
 //---------------------------------------------------------
 //   ModulesSetup
 //---------------------------------------------------------
@@ -42,6 +44,7 @@ ModulesSetup::ModulesSetup()
 #ifdef AVSOMR
               << new Ms::Avs::AvsOmrSetup()
 #endif
+              << new InspectorsSetup();
               ;
       }
 
