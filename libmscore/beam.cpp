@@ -62,7 +62,6 @@ Beam::Beam(Score* s)
       _direction       = Direction::AUTO;
       _up              = true;
       _distribute      = false;
-      _noSlope         = false;
       _userModified[0] = false;
       _userModified[1] = false;
       _grow1           = 1.0;
@@ -102,7 +101,6 @@ Beam::Beam(const Beam& b)
       _cross           = b._cross;
       maxDuration      = b.maxDuration;
       slope            = b.slope;
-      _noSlope         = b._noSlope;
       }
 
 //---------------------------------------------------------
@@ -234,6 +232,17 @@ void Beam::draw(QPainter* painter) const
                   }),
             Qt::OddEvenFill);
             }
+}
+
+//---------------------------------------------------------
+//   noSlope
+//---------------------------------------------------------
+
+bool Beam::isNoSlope() const
+      {
+      QPointF currentBeamPos = beamPos();
+
+      return qFuzzyCompare(currentBeamPos.x(), currentBeamPos.y());
       }
 
 //---------------------------------------------------------
@@ -579,7 +588,7 @@ inline qreal absLimit(qreal val, qreal limit)
 bool Beam::hasNoSlope()
       {
       int idx = (_direction == Direction::AUTO || _direction == Direction::DOWN) ? 0 : 1;
-      return _noSlope && !_userModified[idx];
+      return isNoSlope() && !_userModified[idx];
       }
 
 //---------------------------------------------------------
@@ -2370,7 +2379,7 @@ QVariant Beam::getProperty(Pid propertyId) const
             case Pid::GROW_RIGHT:     return growRight();
             case Pid::USER_MODIFIED:  return userModified();
             case Pid::BEAM_POS:       return beamPos();
-            case Pid::BEAM_NO_SLOPE:  return noSlope();
+            case Pid::BEAM_NO_SLOPE:  return isNoSlope();
             default:
                   return Element::getProperty(propertyId);
             }
@@ -2401,9 +2410,6 @@ bool Beam::setProperty(Pid propertyId, const QVariant& v)
             case Pid::BEAM_POS:
                   if (userModified())
                         setBeamPos(v.toPointF());
-                  break;
-            case Pid::BEAM_NO_SLOPE:
-                  setNoSlope(v.toBool());
                   break;
             default:
                   if (!Element::setProperty(propertyId, v))
