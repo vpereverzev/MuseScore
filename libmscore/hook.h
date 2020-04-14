@@ -28,10 +28,10 @@ class Hook final : public Symbol {
 
    public:
       Hook(Score* = 0);
-      virtual Hook* clone() const override        { return new Hook(*this); }
+      Hook* clone() const override        { return new Hook(*this); }
       Element* elementBase() const override;
-      virtual qreal mag() const override          { return parent()->mag(); }
-      virtual ElementType type() const override   { return ElementType::HOOK; }
+      qreal mag() const override          { return parent()->mag(); }
+      ElementType type() const override   { return ElementType::HOOK; }
       void setHookType(int v);
       int hookType() const                { return _hookType; }
       void layout() override;
