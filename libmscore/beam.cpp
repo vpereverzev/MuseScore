@@ -2204,6 +2204,10 @@ std::vector<QPointF> Beam::gripsPositions(const EditData& ed) const
       ChordRest* c1 = nullptr;
       ChordRest* c2 = nullptr;
       int n = _elements.size();
+
+      if (n == 0)
+            return std::vector<QPointF>();
+
       for (int i = 0; i < n; ++i) {
             if (_elements[i]->isChordRest()) {
                   c1 = toChordRest(_elements[i]);
