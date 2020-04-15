@@ -188,10 +188,19 @@ Fraction Dynamic::velocityChangeLength() const
 bool Dynamic::isVelocityChangeAvailable() const
       {
       switch (dynamicType()) {
-            case Type::SF:
-            case Type::SFPP:
             case Type::FP:
+            case Type::SF:
+            case Type::SFZ:
+            case Type::SFF:
+            case Type::SFFZ:
+            case Type::SFP:
+            case Type::SFPP:
             case Type::RFZ:
+            case Type::RF:
+            case Type::FZ:
+            case Type::M:
+            case Type::R:
+            case Type::S:
                   return true;
 
             default:
@@ -461,7 +470,10 @@ QVariant Dynamic::getProperty(Pid propertyId) const
             case Pid::SUBTYPE:
                   return int(_dynamicType);
             case Pid::VELO_CHANGE:
-                  return changeInVelocity();
+                  if (isVelocityChangeAvailable())
+                        return changeInVelocity();
+                  else
+                        return QVariant();
             case Pid::VELO_CHANGE_SPEED:
                   return int(_velChangeSpeed);
             default:
@@ -518,7 +530,10 @@ QVariant Dynamic::propertyDefault(Pid id) const
             case Pid::VELOCITY:
                   return -1;
             case Pid::VELO_CHANGE:
-                  return dynList[int(dynamicType())].changeInVelocity;
+                  if (isVelocityChangeAvailable())
+                        return dynList[int(dynamicType())].changeInVelocity;
+                  else
+                        return QVariant();
             case Pid::VELO_CHANGE_SPEED:
                   return int(Speed::NORMAL);
             default:
