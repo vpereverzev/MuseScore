@@ -1215,6 +1215,9 @@ QVariant Element::getProperty(Pid propertyId) const
             case Pid::SIZE_SPATIUM_DEPENDENT:
                   return sizeIsSpatiumDependent();
             default:
+                  if (parent())
+                        return parent()->getProperty(propertyId);
+
                   return QVariant();
             }
       }
@@ -1266,6 +1269,9 @@ bool Element::setProperty(Pid propertyId, const QVariant& v)
                   setSizeIsSpatiumDependent(v.toBool());
                   break;
             default:
+                  if (parent())
+                        return parent()->setProperty(propertyId, v);
+
                   qDebug("%s unknown <%s>(%d), data <%s>", name(), propertyName(propertyId), int(propertyId), qPrintable(v.toString()));
                   return false;
             }
@@ -1326,6 +1332,9 @@ QVariant Element::propertyDefault(Pid pid) const
             case Pid::Z:
                   return int(type()) * 100;
             default:
+                  if (parent())
+                        return parent()->propertyDefault(pid);
+
                   return ScoreElement::propertyDefault(pid);
             }
       }

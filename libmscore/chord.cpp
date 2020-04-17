@@ -2720,6 +2720,18 @@ Element* Chord::drop(EditData& data)
 //   dotPosX
 //---------------------------------------------------------
 
+void Chord::setColor(const QColor& color)
+      {
+      ChordRest::setColor(color);
+
+      for (Note* note : _notes)
+            note->undoChangeProperty(Pid::COLOR, color);
+      }
+
+//---------------------------------------------------------
+//   dotPosX
+//---------------------------------------------------------
+
 qreal Chord::dotPosX() const
       {
       if (parent())

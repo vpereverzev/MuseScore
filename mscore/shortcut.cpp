@@ -4375,6 +4375,20 @@ QActionGroup* Shortcut::getActionGroupForWidget(MsWidget w, Qt::ShortcutContext 
       }
 
 //---------------------------------------------------------
+//   getActionByName
+//---------------------------------------------------------
+
+QAction* Shortcut::getActionByName(const char* id)
+      {
+      Shortcut* shortCut = Shortcut::getShortcut(id);
+
+      if (!shortCut)
+            return nullptr;
+
+      return shortCut->action();
+      }
+
+//---------------------------------------------------------
 //   resetToBuildin
 //    reset all shortcuts to builtin values
 //---------------------------------------------------------
