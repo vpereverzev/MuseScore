@@ -105,6 +105,7 @@ class Chord final : public ChordRest {
       bool readProperties(XmlReader&) override;
       Element* drop(EditData&) override;
 
+      void setColor(const QColor& c) override;
       void setStemDirection(Direction d) { _stemDirection = d; }
       Direction stemDirection() const    { return _stemDirection; }
 
