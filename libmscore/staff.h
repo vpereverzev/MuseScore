@@ -60,7 +60,7 @@ struct SwingParameters {
 ///    Global staff data not directly related to drawing.
 //---------------------------------------------------------
 
-class Staff final : public ScoreElement {
+class Staff final : public Element {
    public:
       enum class HideMode { AUTO, ALWAYS, NEVER, INSTRUMENT };
 
@@ -104,6 +104,7 @@ class Staff final : public ScoreElement {
 
    public:
       Staff(Score* score = 0);
+      Staff* clone() const override;
       void init(const InstrumentTemplate*, const StaffType *staffType, int);
       void initFromStaffType(const StaffType* staffType);
       void init(const Staff*);
