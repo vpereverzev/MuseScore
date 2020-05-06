@@ -89,6 +89,7 @@ static constexpr PropertyMetaData propertyList[] = {
       { Pid::BARLINE_SPAN,            false, "span",                  P_TYPE::BOOL,                DUMMY_QT_TRANSLATE_NOOP("propertyName", "span")             },
       { Pid::BARLINE_SPAN_FROM,       false, "spanFromOffset",        P_TYPE::INT,                 DUMMY_QT_TRANSLATE_NOOP("propertyName", "span from")        },
       { Pid::BARLINE_SPAN_TO,         false, "spanToOffset",          P_TYPE::INT,                 DUMMY_QT_TRANSLATE_NOOP("propertyName", "span to")          },
+      { Pid::BARLINE_SHOW_TIPS,       false, "showTips",              P_TYPE::BOOL,                DUMMY_QT_TRANSLATE_NOOP("propertyName", "show tips")        },
       { Pid::OFFSET,                  false, "offset",                P_TYPE::POINT_SP_MM,         DUMMY_QT_TRANSLATE_NOOP("propertyName", "offset")           },
       { Pid::FRET,                    true,  "fret",                  P_TYPE::INT,                 DUMMY_QT_TRANSLATE_NOOP("propertyName", "fret")             },
       { Pid::STRING,                  true,  "string",                P_TYPE::INT,                 DUMMY_QT_TRANSLATE_NOOP("propertyName", "string")           },
