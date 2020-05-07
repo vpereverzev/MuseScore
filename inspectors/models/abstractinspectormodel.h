@@ -46,6 +46,7 @@ public:
         TYPE_SECTIONBREAK,
         TYPE_JUMP,
         TYPE_KEYSIGNATURE,
+        TYPE_TIMESIGNATURE,
         TYPE_ACCIDENTAL,
         TYPE_FRET_DIAGRAM,
         TYPE_PEDAL,

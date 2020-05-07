@@ -6546,6 +6546,9 @@ void MuseScore::cmd(QAction* a, const QString& cmd)
       else if (cmd == "show-staff-text-properties") {
             showPropertiesDialogByElementType(Ms::ElementType::STAFF_TEXT);
             }
+      else if (cmd == "show-timesig-properties") {
+            showPropertiesDialogByElementType(Ms::ElementType::TIMESIG);
+            }
       else if (cmd == "show-articulation-properties") {
             showPropertiesDialogByElementType(Ms::ElementType::ARTICULATION);
             }

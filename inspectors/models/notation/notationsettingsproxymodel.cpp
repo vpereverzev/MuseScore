@@ -10,6 +10,7 @@
 #include "markers/markersettingsmodel.h"
 #include "jumps/jumpsettingsmodel.h"
 #include "keysignatures/keysignaturesettingsmodel.h"
+#include "timesignature/timesignaturesettingsmodel.h"
 #include "accidentals/accidentalsettingsmodel.h"
 #include "fretdiagrams/fretdiagramsettingsmodel.h"
 #include "pedals/pedalsettingsmodel.h"
@@ -45,6 +46,7 @@ NotationSettingsProxyModel::NotationSettingsProxyModel(QObject* parent, IElement
     addModel(new MarkerSettingsModel(this, repository));
     addModel(new JumpSettingsModel(this, repository));
     addModel(new KeySignatureSettingsModel(this, repository));
+    addModel(new TimeSignatureSettingsModel(this, repository));
     addModel(new AccidentalSettingsModel(this, repository));
     addModel(new FretDiagramSettingsModel(this, repository));
     addModel(new PedalSettingsModel(this, repository));
