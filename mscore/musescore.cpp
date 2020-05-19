@@ -174,6 +174,7 @@ extern Ms::Synthesizer* createZerberus();
 #include "widgets/telemetrypermissiondialog.h"
 #endif
 #include "telemetrymanager.h"
+#include "context/scorestateobserver.h"
 
 namespace Ms {
 
@@ -1042,6 +1043,8 @@ MuseScore::MuseScore()
 #ifdef SCRIPT_INTERFACE
       pluginManager = new PluginManager(0);
 #endif
+
+      connect(this, &MuseScore::scoreStateChanged, ScoreStateObserver::instance(), &ScoreStateObserver::setCurrentState);
 
       _positionLabel = new QLabel;
       _positionLabel->setObjectName("decoration widget");  // this prevents animations
