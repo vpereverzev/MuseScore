@@ -3013,7 +3013,7 @@ QVariant ScoreView::inputMethodQuery(Qt::InputMethodQuery query) const
                   case Qt::ImCursorRectangle: {
                         QRectF r;
                         if (editMode()) {
-                              TextCursor* cursor = text->cursor(editData);
+                              TextCursor* cursor = text->cursorFromEditData(editData);
                               r = toPhysical(cursor->cursorRect().translated(text->canvasPos()));
                               r.setWidth(1); // InputMethod doesn't display properly if width left at 0
                               }

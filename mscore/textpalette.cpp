@@ -801,6 +801,7 @@ void TextPalette::populateUnicode()
 void TextPalette::setText(TextBase* te)
       {
       _textElement = te;
+      setFont(te->getProperty(Pid::FONT_FACE).toString());
       }
 
 //---------------------------------------------------------

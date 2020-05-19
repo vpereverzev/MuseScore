@@ -60,7 +60,7 @@ class TextTools : public QDockWidget {
       void toggleBold();
       void toggleItalic();
       void toggleUnderline();
-      TextBase* textElement();
+      TextBase* textElement() { return text; }
       };
 }
 

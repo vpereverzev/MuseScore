@@ -23,10 +23,22 @@ namespace Ms {
 TextEditData::~TextEditData()
       {
       if (deleteText) {
-            TextBase* text = cursor.text();
-            for (ScoreElement* se : text->linkList())
+            for (ScoreElement* se : _textBase->linkList())
                   toTextBase(se)->deleteLater();
             }
+      }
+
+//---------------------------------------------------------
+//   cursor
+//---------------------------------------------------------
+
+TextCursor* TextEditData::cursor() const
+      {
+      IF_ASSERT_FAILED(_textBase) {
+          return nullptr;
+          }
+
+      return _textBase->cursor();
       }
 
 //---------------------------------------------------------
@@ -58,9 +70,9 @@ void TextBase::startEdit(EditData& ed)
       {
       TextEditData* ted = new TextEditData(this);
       ted->e = this;
-      ted->cursor.setRow(0);
-      ted->cursor.setColumn(0);
-      ted->cursor.clearSelection();
+      ted->cursor()->setRow(0);
+      ted->cursor()->setColumn(0);
+      ted->cursor()->clearSelection();
 
       Q_ASSERT(!score()->undoStack()->active());      // make sure we are not in a Cmd
 
@@ -69,8 +81,8 @@ void TextBase::startEdit(EditData& ed)
 
       if (layoutInvalid)
             layout();
-      if (!ted->cursor.set(ed.startMove))
-            ted->cursor.init();
+      if (!ted->cursor()->set(ed.startMove))
+            ted->cursor()->init();
       qreal _spatium = spatium();
       // refresh edit bounding box
       score()->addRefresh(canvasBoundingRect().adjusted(-_spatium, -_spatium, _spatium, _spatium));
@@ -84,9 +96,11 @@ void TextBase::startEdit(EditData& ed)
 void TextBase::endEdit(EditData& ed)
       {
       TextEditData* ted = static_cast<TextEditData*>(ed.getData(this));
-      IF_ASSERT_FAILED(ted) {
+      IF_ASSERT_FAILED(ted && ted->cursor()) {
             return;
             }
+
+      ted->cursor()->clearSelection();
 
       UndoStack* undo = score()->undoStack();
       IF_ASSERT_FAILED(undo) {
@@ -181,7 +195,7 @@ void TextBase::endEdit(EditData& ed)
 void TextBase::insertSym(EditData& ed, SymId id)
       {
       TextEditData* ted = static_cast<TextEditData*>(ed.getData(this));
-      TextCursor* _cursor = &ted->cursor;
+      TextCursor* _cursor = ted->cursor();
 
       deleteSelectedText(ed);
       QString s = score()->scoreFont()->toString(id);
@@ -201,7 +215,7 @@ void TextBase::insertSym(EditData& ed, SymId id)
 void TextBase::insertText(EditData& ed, const QString& s)
       {
       TextEditData* ted = static_cast<TextEditData*>(ed.getData(this));
-      TextCursor* _cursor = &ted->cursor;
+      TextCursor* _cursor = ted->cursor();
       score()->undo(new InsertText(_cursor, s), &ed);
       }
 
@@ -212,7 +226,7 @@ void TextBase::insertText(EditData& ed, const QString& s)
 bool TextBase::edit(EditData& ed)
       {
       TextEditData* ted = static_cast<TextEditData*>(ed.getData(this));
-      TextCursor* _cursor = &ted->cursor;
+      TextCursor* _cursor = ted->cursor();
 
       // do nothing on Shift, it messes up IME on Windows. See #64046
       if (ed.key == Qt::Key_Shift)
@@ -466,7 +480,7 @@ bool TextBase::edit(EditData& ed)
 void TextBase::movePosition(EditData& ed, QTextCursor::MoveOperation op)
       {
       TextEditData* ted = static_cast<TextEditData*>(ed.getData(this));
-      TextCursor* _cursor = &ted->cursor;
+      TextCursor* _cursor = ted->cursor();
       _cursor->movePosition(op);
       score()->addRefresh(canvasBoundingRect());
       score()->update();
@@ -481,7 +495,7 @@ void ChangeText::insertText(EditData* ed)
       TextCursor tc = c;
       c.text()->editInsertText(&tc, s);
       if (ed) {
-            TextCursor* ttc = c.text()->cursor(*ed);
+            TextCursor* ttc = c.text()->cursorFromEditData(*ed);
             *ttc = tc;
             }
       }
@@ -500,7 +514,7 @@ void ChangeText::removeText(EditData* ed)
             l.remove(column, &c);
       c.text()->triggerLayout();
       if (ed)
-            *c.text()->cursor(*ed) = tc;
+            *c.text()->cursorFromEditData(*ed) = tc;
       c.text()->setTextInvalid();
       }
 
@@ -528,7 +542,7 @@ void SplitJoinText::join(EditData* ed)
       c.setFormat(*charFmt);             // restore orig. format at new line
       c.clearSelection();
       if (ed)
-            *t->cursor(*ed) = c;
+            *t->cursorFromEditData(*ed) = c;
       c.text()->setTextInvalid();
       }
 
@@ -550,7 +564,7 @@ void SplitJoinText::split(EditData* ed)
       c.clearSelection();
 
       if (ed)
-            *t->cursor(*ed) = c;
+            *t->cursorFromEditData(*ed) = c;
       c.text()->setTextInvalid();
       }
 
@@ -560,7 +574,7 @@ void SplitJoinText::split(EditData* ed)
 
 Element* TextBase::drop(EditData& ed)
       {
-      TextCursor* _cursor = cursor(ed);
+      TextCursor* _cursor = cursorFromEditData(ed);
 
       Element* e = ed.dropElement;
 
@@ -692,7 +706,7 @@ void TextBase::paste(EditData& ed)
 void TextBase::inputTransition(EditData& ed, QInputMethodEvent* ie)
       {
       TextEditData* ted = static_cast<TextEditData*>(ed.getData(this));
-      TextCursor* _cursor = &ted->cursor;
+      TextCursor* _cursor = ted->cursor();
 
       // remove preedit string
       int n = preEdit.size();
@@ -755,7 +769,7 @@ void TextBase::inputTransition(EditData& ed, QInputMethodEvent* ie)
 void TextBase::endHexState(EditData& ed)
       {
       TextEditData* ted = static_cast<TextEditData*>(ed.getData(this));
-      TextCursor* _cursor = &ted->cursor;
+      TextCursor* _cursor = ted->cursor();
 
       if (hexState >= 0) {
             if (hexState > 0) {
@@ -784,7 +798,7 @@ void TextBase::endHexState(EditData& ed)
 
 bool TextBase::deleteSelectedText(EditData& ed)
       {
-      TextCursor* _cursor = cursor(ed);
+      TextCursor* _cursor = cursorFromEditData(ed);
 
       if (!_cursor->hasSelection())
             return false;
