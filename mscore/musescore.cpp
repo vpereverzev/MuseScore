@@ -3319,14 +3319,6 @@ void MuseScore::showInspector(bool visible)
             _inspector = new Inspector(getQmlUiEngine());
 
             connect(_inspector, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
-            connect(_inspector, &Inspector::propertyEditStarted, [this] (Element* element) {
-                  if (element->isArticulation())
-                      currentScoreView()->editArticulationProperties(toArticulation(element));
-                  else if (element->isTimeSig())
-                      currentScoreView()->editTimeSigProperties(toTimeSig(element));
-                  else if (element->isStaffText())
-                      currentScoreView()->editStaffTextProperties(toStaffTextBase(element));
-            });
             connect(_inspector, &Inspector::layoutUpdateRequested, [this] () {
                  ScoreView* scoreView = currentScoreView();
                  scoreView->updateGrips();
@@ -3337,6 +3329,29 @@ void MuseScore::showInspector(bool visible)
             reDisplayDockWidget(_inspector, visible);
       if (visible)
             updateInspector();
+      }
+
+//---------------------------------------------------------
+//   showPropertiesDialogByElementType
+//---------------------------------------------------------
+
+void MuseScore::showPropertiesDialogByElementType(const ElementType& type)
+      {
+      if (!cs || !currentScoreView())
+          return;
+
+      for (Element* selectedElement : cs->selection().elements()) {
+
+            if (!selectedElement || selectedElement->type() != type)
+                  continue;
+
+            if (type == Ms::ElementType::ARTICULATION)
+                  return currentScoreView()->editArticulationProperties(toArticulation(selectedElement));
+            else if (type == Ms::ElementType::TIMESIG)
+                  return currentScoreView()->editTimeSigProperties(toTimeSig(selectedElement));
+            else if (type == Ms::ElementType::STAFF_TEXT)
+                  return currentScoreView()->editStaffTextProperties(toStaffTextBase(selectedElement));
+            }
       }
 
 //---------------------------------------------------------
@@ -6286,8 +6301,13 @@ void MuseScore::cmd(QAction* a, const QString& cmd)
             showSynthControl(a->isChecked());
       else if (cmd == "toggle-selection-window")
             showSelectionWindow(a->isChecked());
-      else if (cmd == "show-keys")
-            ;
+      else if (cmd == "show-keys") {
+            if (!textPalette)
+                  textPalette = new TextPalette(this);
+
+            textPalette->setText(_textTools->textElement());
+            textPalette->show();
+            }
       else if (cmd == "toggle-fileoperations")
             fileTools->setVisible(!fileTools->isVisible());
       else if (cmd == "toggle-transport")
@@ -6522,6 +6542,9 @@ void MuseScore::cmd(QAction* a, const QString& cmd)
                   cs->setLayoutAll();
                   cs->update();
                   }
+            }
+      else if (cmd == "show-staff-text-properties") {
+            showPropertiesDialogByElementType(Ms::ElementType::STAFF_TEXT);
             }
       else if (cmd == "show-corrupted-measures") {
             MScore::showCorruptedMeasures = a->isChecked();
