@@ -84,7 +84,7 @@ QList<Ms::ElementType> AbstractInspectorModel::supportedElementTypesBySectionTyp
     switch (sectionType) {
     case SECTION_GENERAL:
         return { Ms::ElementType::MAXTYPE };
-    case SECTION_NOTATION:
+    case SECTION_NOTATION: {
         static QList<Ms::ElementType> notationTypes = { Ms::ElementType::NOTE,
                                                         Ms::ElementType::STEM,
                                                         Ms::ElementType::NOTEDOT,
@@ -109,13 +109,13 @@ QList<Ms::ElementType> AbstractInspectorModel::supportedElementTypesBySectionTyp
                                                         Ms::ElementType::HAIRPIN,
                                                         Ms::ElementType::HAIRPIN_SEGMENT };
         return notationTypes;
-
-    case SECTION_TEXT:
+    }
+    case SECTION_TEXT: {
         static QList<Ms::ElementType> textTypes = { Ms::ElementType::TEXT, Ms::ElementType::TEXTLINE,
                                                     Ms::ElementType::TEXTLINE_BASE, Ms::ElementType::TEXTLINE_SEGMENT,
                                                     Ms::ElementType::STAFF_TEXT, Ms::ElementType::SYSTEM_TEXT};
         return textTypes;
-
+    }
     default:
         return QList<Ms::ElementType>();
     }
