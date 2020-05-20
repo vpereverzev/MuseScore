@@ -1782,15 +1782,15 @@ void TextBase::genText() const
 //   selectAll
 //---------------------------------------------------------
 
-void TextBase::selectAll(TextCursor* _cursor)
+void TextBase::selectAll(TextCursor* cursor)
       {
       if (_layout.isEmpty())
           return;
 
-      _cursor->setSelectLine(0);
-      _cursor->setSelectColumn(0);
-      _cursor->setRow(rows() - 1);
-      _cursor->setColumn(_cursor->curLine().columns());
+      cursor->setSelectLine(0);
+      cursor->setSelectColumn(0);
+      cursor->setRow(rows() - 1);
+      cursor->setColumn(cursor->curLine().columns());
       }
 
 //---------------------------------------------------------
@@ -1969,8 +1969,8 @@ QRectF TextBase::pageRectangle() const
 void TextBase::dragTo(EditData& ed)
       {
       TextEditData* ted = static_cast<TextEditData*>(ed.getData(this));
-      TextCursor* _cursor = ted->cursor();
-      _cursor->set(ed.pos, QTextCursor::KeepAnchor);
+      TextCursor* cursor = ted->cursor();
+      cursor->set(ed.pos, QTextCursor::KeepAnchor);
       score()->setUpdateAll();
       score()->update();
       }
