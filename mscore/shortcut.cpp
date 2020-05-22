@@ -2438,8 +2438,17 @@ Shortcut Shortcut::_sc[] = {
          MsWidget::SCORE_TAB,
          STATE_NORMAL | STATE_NOTE_ENTRY,
          "show-staff-text-properties",
-         QT_TRANSLATE_NOOP("action","Show staff text properties"),
-         QT_TRANSLATE_NOOP("action","Show staff text properties"),
+         QT_TRANSLATE_NOOP("action","Staff text properties..."),
+         QT_TRANSLATE_NOOP("action","Edit staff text properties"),
+         0,
+         Icons::Invalid_ICON
+         },
+      {
+         MsWidget::SCORE_TAB,
+         STATE_NORMAL | STATE_NOTE_ENTRY,
+         "show-articulation-properties",
+         QT_TRANSLATE_NOOP("action","Articulation properties..."),
+         QT_TRANSLATE_NOOP("action","Edit articulation properties"),
          0,
          Icons::Invalid_ICON
          },
