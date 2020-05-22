@@ -12,6 +12,7 @@ import "sectionbreaks"
 import "markers"
 import "jumps"
 import "keysignatures"
+import "timesignatures"
 import "accidentals"
 import "fretdiagrams"
 import "pedals"
@@ -106,6 +107,12 @@ InspectorSectionView {
             popupAvailableWidth: root.width
             model: root.model ? root.model.modelByType(Inspector.TYPE_KEYSIGNATURE) : null
             onPopupContentHeightChanged: updateContentHeight(popupContentHeight)
+        }
+
+        TimeSignatureSettings {
+            popupPositionX: mapToGlobal(grid.x, grid.y).x - mapToGlobal(x, y).x
+            popupAvailableWidth: root.width
+            model: root.model ? root.model.modelByType(Inspector.TYPE_TIMESIGNATURE) : null
         }
 
         AccidentalSettings {

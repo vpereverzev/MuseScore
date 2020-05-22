@@ -99,6 +99,7 @@
         <file>view/qml/notation/markers/MarkerPopup.qml</file>
         <file>view/qml/notation/jumps/JumpPopup.qml</file>
         <file>view/qml/notation/keysignatures/KeySignaturePopup.qml</file>
+        <file>view/qml/notation/timesignatures/TimeSignaturePopup.qml</file>
         <file>view/qml/notation/accidentals/AccidentalPopup.qml</file>
         <file>view/qml/notation/pedals/PedalPopup.qml</file>
         <file>view/qml/notation/tempos/TempoSettings.qml</file>
@@ -111,6 +112,7 @@
         <file>view/qml/notation/markers/MarkerSettings.qml</file>
         <file>view/qml/notation/jumps/JumpSettings.qml</file>
         <file>view/qml/notation/keysignatures/KeySignatureSettings.qml</file>
+        <file>view/qml/notation/timesignatures/TimeSignatureSettings.qml</file>
         <file>view/qml/notation/accidentals/AccidentalSettings.qml</file>
         <file>view/qml/notation/fretdiagrams/FretDiagramSettings.qml</file>
         <file>view/qml/notation/pedals/PedalSettings.qml</file>
