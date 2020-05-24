@@ -100,7 +100,12 @@ void Ambitus::setTrack(int t)
       if (_topPitch == INVALID_PITCH || _topTpc == Tpc::TPC_INVALID
             || _bottomPitch == INVALID_PITCH ||_bottomTpc == Tpc::TPC_INVALID) {
             if (segm && stf) {
-                  updateRange();
+                  Ambitus::Ranges ranges = estimateRanges();
+                  _topTpc = ranges.topTpc;
+                  _bottomTpc = ranges.bottomTpc;
+                  _topPitch = ranges.topPitch;
+                  _bottomPitch = ranges.bottomPitch;
+
                   _topAccid.setTrack(t);
                   _bottomAccid.setTrack(t);
                   }
@@ -572,10 +577,12 @@ void Ambitus::normalize()
 //    scans the staff contents up to next section break to update the range pitches/tpc's
 //---------------------------------------------------------
 
-void Ambitus::updateRange()
+Ambitus::Ranges Ambitus::estimateRanges() const
       {
+      Ambitus::Ranges result;
+
       if (!segment())
-            return;
+            return result;
       Chord* chord;
       int   firstTrack  = track();
       int   lastTrack   = firstTrack + VOICES-1;
@@ -622,11 +629,13 @@ void Ambitus::updateRange()
             }
 
       if (pitchTop > -1000) {             // if something has been found, update this
-            _topPitch    = pitchTop;
-            _bottomPitch = pitchBottom;
-            _topTpc      = tpcTop;
-            _bottomTpc   = tpcBottom;
+            result.topTpc = tpcTop;
+            result.bottomTpc = tpcBottom;
+            result.topPitch = pitchTop;
+            result.bottomPitch = pitchBottom;
             }
+
+      return result;
       }
 
 //---------------------------------------------------------
@@ -727,13 +736,18 @@ QVariant Ambitus::propertyDefault(Pid id) const
                   return HASLINE_DEFAULT;
             case Pid::LINE_WIDTH:
                   return Spatium(LINEWIDTH_DEFAULT);
-            case Pid::TPC1:                  // no defaults for pitches, tpc's and octaves
+            case Pid::TPC1:
+                  return estimateRanges().topTpc;
             case Pid::FBPARENTHESIS1:
+                  return estimateRanges().bottomTpc;
             case Pid::PITCH:
+                  return estimateRanges().topPitch;
             case Pid::FBPARENTHESIS2:
+                  return estimateRanges().bottomPitch;
             case Pid::FBPARENTHESIS3:
+                  return int(estimateRanges().topPitch/12);
             case Pid::FBPARENTHESIS4:
-                  break;
+                  return int(estimateRanges().bottomPitch/12);
             default:
                   return Element::propertyDefault(id);
             }
