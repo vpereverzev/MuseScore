@@ -745,9 +745,9 @@ QVariant Ambitus::propertyDefault(Pid id) const
             case Pid::FBPARENTHESIS2:
                   return estimateRanges().bottomPitch;
             case Pid::FBPARENTHESIS3:
-                  return int(estimateRanges().topPitch/12);
+                  return int(estimateRanges().topPitch / 12) - 1;
             case Pid::FBPARENTHESIS4:
-                  return int(estimateRanges().bottomPitch/12);
+                  return int(estimateRanges().bottomPitch / 12) - 1;
             default:
                   return Element::propertyDefault(id);
             }
