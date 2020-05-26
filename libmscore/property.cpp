@@ -118,6 +118,9 @@ static constexpr PropertyMetaData propertyList[] = {
       { Pid::LAYOUT_BREAK,            false, "subtype",               P_TYPE::LAYOUT_BREAK,        DUMMY_QT_TRANSLATE_NOOP("propertyName", "subtype")          },
       { Pid::AUTOSCALE,               false, "autoScale",             P_TYPE::BOOL,                DUMMY_QT_TRANSLATE_NOOP("propertyName", "autoscale")        },
       { Pid::SIZE,                    false, "size",                  P_TYPE::SIZE,                DUMMY_QT_TRANSLATE_NOOP("propertyName", "size")             },
+      { Pid::IMAGE_HEIGHT,            false, "imageHeight",           P_TYPE::REAL,                DUMMY_QT_TRANSLATE_NOOP("propertyName", "imageHeight")      },
+      { Pid::IMAGE_WIDTH,             false, "imageWidth",            P_TYPE::REAL,                DUMMY_QT_TRANSLATE_NOOP("propertyName", "imageWidth")       },
+      { Pid::IMAGE_FRAMED,            false, "imageFramed",           P_TYPE::BOOL,                DUMMY_QT_TRANSLATE_NOOP("propertyName", "imageFramed")      },
 
       { Pid::SCALE,                   false, "scale",                 P_TYPE::SCALE,               DUMMY_QT_TRANSLATE_NOOP("propertyName", "scale")            },
       { Pid::LOCK_ASPECT_RATIO,       false, "lockAspectRatio",       P_TYPE::BOOL,                DUMMY_QT_TRANSLATE_NOOP("propertyName", "aspect ratio locked") },
