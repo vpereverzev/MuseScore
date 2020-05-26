@@ -167,6 +167,73 @@ void Image::draw(QPainter* painter) const
       }
 
 //---------------------------------------------------------
+//   isImageFramed
+//---------------------------------------------------------
+
+bool Image::isImageFramed() const
+      {
+      if (!parent())
+            return false;
+
+      return parent()->isBox();
+      }
+
+//---------------------------------------------------------
+//   imageAspectRatio
+//---------------------------------------------------------
+
+qreal Image::imageAspectRatio() const
+      {
+      return _size.width() / _size.height();
+      }
+
+//---------------------------------------------------------
+//   setImageHeight
+//---------------------------------------------------------
+
+void Image::updateImageHeight(const qreal& height)
+      {
+      qreal aspectRatio = imageAspectRatio();
+
+      _size.setHeight(height);
+
+      if (_lockAspectRatio)
+            _size.setWidth(height * aspectRatio);
+      }
+
+//---------------------------------------------------------
+//   setImageWidth
+//---------------------------------------------------------
+
+void Image::updateImageWidth(const qreal& width)
+      {
+      qreal aspectRatio = imageAspectRatio();
+
+      _size.setWidth(width);
+
+      if (_lockAspectRatio)
+            _size.setHeight(width / aspectRatio);
+      }
+
+//---------------------------------------------------------
+//   imageHeight
+//---------------------------------------------------------
+
+qreal Image::imageHeight() const
+      {
+      return _size.height();
+      }
+
+//---------------------------------------------------------
+//   imageWidth
+//---------------------------------------------------------
+
+qreal Image::imageWidth() const
+      {
+      return _size.width();
+      }
+
+//---------------------------------------------------------
 //   write
 //---------------------------------------------------------
 
@@ -485,6 +552,12 @@ QVariant Image::getProperty(Pid propertyId) const
                   return autoScale();
             case Pid::SIZE:
                   return size();
+            case Pid::IMAGE_HEIGHT:
+                  return imageHeight();
+            case Pid::IMAGE_WIDTH:
+                  return imageWidth();
+            case Pid::IMAGE_FRAMED:
+                  return isImageFramed();
             case Pid::LOCK_ASPECT_RATIO:
                   return lockAspectRatio();
             case Pid::SIZE_IS_SPATIUM:
@@ -508,6 +581,14 @@ bool Image::setProperty(Pid propertyId, const QVariant& v)
                   break;
             case Pid::SIZE:
                   setSize(v.toSizeF());
+                  break;
+            case Pid::IMAGE_HEIGHT:
+                  updateImageHeight(v.toDouble());
+                  break;
+            case Pid::IMAGE_WIDTH:
+                  updateImageWidth(v.toDouble());
+                  break;
+            case Pid::IMAGE_FRAMED:
                   break;
             case Pid::LOCK_ASPECT_RATIO:
                   setLockAspectRatio(v.toBool());
@@ -540,6 +621,12 @@ QVariant Image::propertyDefault(Pid id) const
                   return defaultAutoScale;
             case Pid::SIZE:
                   return pixel2size(imageSize());
+            case Pid::IMAGE_HEIGHT:
+                  return pixel2size(imageSize()).height();
+            case Pid::IMAGE_WIDTH:
+                  return pixel2size(imageSize()).width();
+            case Pid::IMAGE_FRAMED:
+                  return isImageFramed();
             case Pid::LOCK_ASPECT_RATIO:
                   return defaultLockAspectRatio;
             case Pid::SIZE_IS_SPATIUM:
