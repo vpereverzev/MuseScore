@@ -25,12 +25,16 @@ void TextFrameSettingsModel::requestElements()
 
 void TextFrameSettingsModel::loadProperties()
 {
-    loadPropertyItem(m_gapAbove);
-    loadPropertyItem(m_gapBelow);
-    loadPropertyItem(m_frameLeftMargin);
-    loadPropertyItem(m_frameRightMargin);
-    loadPropertyItem(m_frameTopMargin);
-    loadPropertyItem(m_frameBottomMargin);
+    auto formatter = [] (const QVariant& elementPropertyValue) -> QVariant {
+        return QString::number(elementPropertyValue.toDouble(), 'f', 2).toDouble();
+    };
+
+    loadPropertyItem(m_gapAbove, formatter);
+    loadPropertyItem(m_gapBelow, formatter);
+    loadPropertyItem(m_frameLeftMargin, formatter);
+    loadPropertyItem(m_frameRightMargin, formatter);
+    loadPropertyItem(m_frameTopMargin, formatter);
+    loadPropertyItem(m_frameBottomMargin, formatter);
 }
 
 void TextFrameSettingsModel::resetProperties()

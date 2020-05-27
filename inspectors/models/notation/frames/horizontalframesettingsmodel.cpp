@@ -23,12 +23,13 @@ void HorizontalFrameSettingsModel::requestElements()
 
 void HorizontalFrameSettingsModel::loadProperties()
 {
-    loadPropertyItem(m_frameWidth, [] (const QVariant& elementPropertyValue) -> QVariant {
+    auto formatter = [] (const QVariant& elementPropertyValue) -> QVariant {
         return QString::number(elementPropertyValue.toDouble(), 'f', 2).toDouble();
-    });
+    };
 
-    loadPropertyItem(m_leftGap);
-    loadPropertyItem(m_rightGap);
+    loadPropertyItem(m_frameWidth, formatter);
+    loadPropertyItem(m_leftGap, formatter);
+    loadPropertyItem(m_rightGap, formatter);
     loadPropertyItem(m_shouldDisplayKeysAndBrackets);
 }
 
