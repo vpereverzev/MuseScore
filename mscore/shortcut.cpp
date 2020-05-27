@@ -2455,6 +2455,15 @@ Shortcut Shortcut::_sc[] = {
       {
          MsWidget::SCORE_TAB,
          STATE_NORMAL | STATE_NOTE_ENTRY,
+         "show-time-signature-properties",
+         QT_TRANSLATE_NOOP("action","Time signature properties..."),
+         QT_TRANSLATE_NOOP("action","Edit time signature properties"),
+         0,
+         Icons::Invalid_ICON
+         },
+      {
+         MsWidget::SCORE_TAB,
+         STATE_NORMAL | STATE_NOTE_ENTRY,
          "system-break",
          QT_TRANSLATE_NOOP("action","Toggle System Break"),
          QT_TRANSLATE_NOOP("action","Toggle 'System Break'"),

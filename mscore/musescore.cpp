@@ -6544,10 +6544,13 @@ void MuseScore::cmd(QAction* a, const QString& cmd)
                   }
             }
       else if (cmd == "show-staff-text-properties") {
-            showPropertiesDialogByElementType(Ms::ElementType::STAFF_TEXT);
+            showPropertiesDialogByElementType(ElementType::STAFF_TEXT);
             }
       else if (cmd == "show-articulation-properties") {
-            showPropertiesDialogByElementType(Ms::ElementType::ARTICULATION);
+            showPropertiesDialogByElementType(ElementType::ARTICULATION);
+            }
+      else if (cmd == "show-time-signature-properties") {
+            showPropertiesDialogByElementType(ElementType::TIMESIG);
             }
       else if (cmd == "show-corrupted-measures") {
             MScore::showCorruptedMeasures = a->isChecked();
