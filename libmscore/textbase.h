@@ -231,7 +231,7 @@ class TextBase : public Element {
       // might be valid and the other can be constructed from it
 
       mutable QString _text;                          // cached
-      mutable bool textInvalid      { true  };
+      mutable bool textInvalid      { true };
 
       QList<TextBlock> _layout;
       bool layoutInvalid            { true  };
