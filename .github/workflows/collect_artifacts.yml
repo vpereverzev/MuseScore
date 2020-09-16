@@ -9,9 +9,6 @@ on:
         default: 'warning'
       tags:
         description: 'Test scenario tags'  
-  pull_request:
-    branches:
-    - master
 
 jobs:
   collect_artifacts_Linux:
