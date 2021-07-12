@@ -147,7 +147,7 @@ bool CoreAudioDriver::open(const IAudioDriver::Spec& spec, IAudioDriver::Spec* a
             if (!pData || hr != S_OK) {
                 continue;
             }
-            s_data->callback(nullptr, reinterpret_cast<uint8_t*>(pData),
+            s_data->callback(nullptr, reinterpret_cast<float*>(pData),
                              bufferSize * s_data->pFormat.wBitsPerSample * s_data->pFormat.nChannels / 8);
             hr = s_data->renderClient->ReleaseBuffer(bufferSize, 0);
             logError(hr);

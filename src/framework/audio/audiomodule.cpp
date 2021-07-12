@@ -169,9 +169,9 @@ void AudioModule::onInit(const framework::IApplication::RunMode& mode)
     requiredSpec.format = IAudioDriver::Format::AudioF32;
     requiredSpec.channels = s_audioConfiguration->audioChannelsCount();
     requiredSpec.samples = s_audioConfiguration->driverBufferSize();
-    requiredSpec.callback = [](void* /*userdata*/, uint8_t* stream, int byteCount) {
+    requiredSpec.callback = [](void* /*userdata*/, float* stream, int byteCount) {
         auto samplesPerChannel = byteCount / (2 * sizeof(float));
-        s_audioBuffer->pop(reinterpret_cast<float*>(stream), samplesPerChannel);
+        s_audioBuffer->pop(stream, samplesPerChannel);
     };
 
     IAudioDriver::Spec activeSpec;

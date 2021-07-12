@@ -62,10 +62,9 @@ static void* alsaThread(void* aParam)
 
     while (!data->audioProcessingDone)
     {
-        uint8_t* stream = (uint8_t*)data->buffer;
         int len = data->samples * data->channels * sizeof(float);
 
-        data->callback(data->userdata, stream, len);
+        data->callback(data->userdata, data->buffer, len);
 
         snd_pcm_sframes_t pcm = snd_pcm_writei(data->alsaDeviceHandle, data->buffer, data->samples);
         if (pcm != -EPIPE) {

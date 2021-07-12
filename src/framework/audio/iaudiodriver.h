@@ -44,7 +44,7 @@ public:
         AudioS16  // short 16 bit
     };
 
-    using Callback = std::function<void (void* userdata, uint8_t* stream, int len)>;
+    using Callback = std::function<void (void* userdata, float* stream, int len)>;
 
     struct Spec
     {
