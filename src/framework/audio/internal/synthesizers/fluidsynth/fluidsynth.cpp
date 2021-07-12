@@ -28,6 +28,7 @@
 #include <cmath>
 
 #include <fluidsynth.h>
+//#include "fluid_synth.h"
 
 #include "log.h"
 #include "audioerrors.h"
@@ -44,6 +45,51 @@ static const double FLUID_GLOBAL_VOLUME_GAIN{ 1.8 };
 ///  Fluid does not support MONO, so they start counting audio channels from 1, which means "1 pair of audio channels"
 /// @see https://www.fluidsynth.org/api/settings_synth.html
 static const audioch_t FLUID_AUDIO_CHANNELS_PAIR = 1;
+
+static std::map<std::string, fluid_sfont_t*> s_soundFontCache;
+
+static void* findCachedSoundFont(const char* fileName)
+{
+    std::string str(fileName);
+
+    auto search = s_soundFontCache.find(str);
+
+    if (search != s_soundFontCache.end()) {
+        return search->second;
+    }
+
+    return nullptr;
+}
+
+int default_fclose(void* handle)
+{
+    return std::fclose(static_cast<FILE*>(handle)) == 0 ? FLUID_OK : FLUID_FAILED;
+}
+
+long default_ftell(void* handle)
+{
+    return std::ftell(static_cast<FILE*>(handle));
+}
+
+int safe_fread(void* buf, int count, void* fd)
+{
+    if (std::fread(buf, count, 1, static_cast<FILE*>(fd)) != 1) {
+        if (std::feof(static_cast<FILE*>(fd))) {
+            return FLUID_FAILED;
+        }
+    }
+
+    return FLUID_OK;
+}
+
+int safe_fseek(void* fd, long ofs, int whence)
+{
+    if (std::fseek(static_cast<FILE*>(fd), ofs, whence) != 0) {
+        return FLUID_FAILED;
+    }
+
+    return FLUID_OK;
+}
 
 struct mu::audio::synth::Fluid {
     fluid_settings_t* settings = nullptr;
@@ -63,7 +109,7 @@ FluidSynth::FluidSynth()
 
 bool FluidSynth::isValid() const
 {
-    return !m_soundFonts.empty();
+    return hasLoadedSoundFonts();
 }
 
 std::string FluidSynth::name() const
@@ -167,19 +213,35 @@ Ret FluidSynth::addSoundFonts(const std::vector<io::path>& sfonts)
     }
 
     bool ok = true;
-    for (const io::path& sfont : sfonts) {
-        SoundFont sf;
-        sf.id = fluid_synth_sfload(m_fluid->synth, sfont.c_str(), 0);
-        if (sf.id == FLUID_FAILED) {
-            LOGE() << "failed load soundfont: " << sfont;
-            ok = false;
-            continue;
+    for (const io::path& path : sfonts) {
+
+        auto search = s_soundFontCache.find(path.toStdString());
+
+        if (search == s_soundFontCache.end() || !search->second) {
+            int ret = fluid_synth_sfload(m_fluid->synth, path.c_str(), 0);
+
+            if (ret == FLUID_FAILED) {
+                continue;
+            }
+
+            fluid_sfont_t* sfont = fluid_synth_get_sfont_by_id(m_fluid->synth, ret);
+            s_soundFontCache.emplace(path.toStdString(), sfont);
+
+            LOGI() << "successfully loaded soundfont: " << path;
+        } else {
+
+            fluid_sfloader_t* loader = new_fluid_defsfloader(m_fluid->settings);
+            fluid_sfloader_set_callbacks(loader,
+                                         findCachedSoundFont,
+                                         safe_fread,
+                                         safe_fseek,
+                                         default_ftell,
+                                         default_fclose);
+
+            fluid_synth_add_sfloader(m_fluid->synth, loader);
+
+            LOGI() << "using cached soundfont: " << path;
         }
-
-        sf.path = sfont;
-        m_soundFonts.push_back(std::move(sf));
-
-        LOGI() << "success load soundfont: " << sfont;
     }
 
     return ok ? make_ret(Err::NoError) : make_ret(Err::SoundFontFailedLoad);
@@ -191,20 +253,19 @@ Ret FluidSynth::removeSoundFonts()
         return make_ret(Err::SynthNotInited);
     }
 
-    if (m_soundFonts.empty()) {
+    if (!hasLoadedSoundFonts()) {
         return make_ret(Err::NoError);
     }
 
     bool ok = true;
-    for (const SoundFont& sf : m_soundFonts) {
-        int ret = fluid_synth_sfunload(m_fluid->synth, sf.id, true);
-        if (ret == FLUID_FAILED) {
-            LOGE() << "failed remove soundfont id: " << sf.id << ", path: " << sf.path;
-            ok = false;
-        }
-    }
 
-    m_soundFonts.clear();
+    int count = fluid_synth_sfcount(m_fluid->synth);
+
+    for (int i = 0; i < count; ++i) {
+        fluid_sfont_t* sfont = fluid_synth_get_sfont(m_fluid->synth, i);
+
+        fluid_synth_sfunload(m_fluid->synth, fluid_sfont_get_id(sfont), 0);
+    }
 
     return ok ? make_ret(Err::NoError) : make_ret(Err::SoundFontFailedUnload);
 }
@@ -215,7 +276,7 @@ Ret FluidSynth::setupMidiChannels(const std::vector<Event>& events)
         return make_ret(Err::SynthNotInited);
     }
 
-    if (m_soundFonts.empty()) {
+    if (!hasLoadedSoundFonts()) {
         LOGE() << "sound fonts not loaded";
         return make_ret(Err::SoundFontNotLoaded);
     }
@@ -398,4 +459,9 @@ void FluidSynth::process(float* buffer, unsigned int sampleCount)
 async::Channel<unsigned int> FluidSynth::audioChannelsCountChanged() const
 {
     return m_streamsCountChanged;
+}
+
+bool FluidSynth::hasLoadedSoundFonts() const
+{
+    return fluid_synth_sfcount(m_fluid->synth) == 0;
 }

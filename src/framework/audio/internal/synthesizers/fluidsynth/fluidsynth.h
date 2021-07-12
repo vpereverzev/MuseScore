@@ -70,6 +70,8 @@ public:
 
 private:
 
+    bool hasLoadedSoundFonts() const;
+
     enum midi_control
     {
         BANK_SELECT_MSB = 0x00,
@@ -78,13 +80,7 @@ private:
         PAN_MSB         = 0x0A
     };
 
-    struct SoundFont {
-        int id = -1;
-        io::path path;
-    };
-
     std::shared_ptr<Fluid> m_fluid = nullptr;
-    std::vector<SoundFont> m_soundFonts;
 
     bool m_isLoggingSynthEvents = false;
 
