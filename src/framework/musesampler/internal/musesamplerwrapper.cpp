@@ -385,21 +385,28 @@ int MuseSamplerWrapper::pitchIndex(const mpe::pitch_level_t pitchLevel) const
 
 double MuseSamplerWrapper::dynamicLevelRatio(const mpe::dynamic_level_t level) const
 {
-    static constexpr mpe::dynamic_level_t MIN_SUPPORTED_LEVEL = mpe::dynamicLevelFromType(mpe::DynamicType::pppp);
-    static constexpr mpe::dynamic_level_t MAX_SUPPORTED_LEVEL = mpe::dynamicLevelFromType(mpe::DynamicType::ffff);
+    // Use erf to smoothly scale between min and max, with main part as roughly linear from pp to ff
+    static constexpr mpe::dynamic_level_t MIN_SUPPORTED_LEVEL = mpe::dynamicLevelFromType(mpe::DynamicType::ppppppppp);
+    static constexpr mpe::dynamic_level_t MAX_SUPPORTED_LEVEL = mpe::dynamicLevelFromType(mpe::DynamicType::fffffffff);
 
+    // Range when mapping with erf
+    static constexpr double MIN_X = -3.0;
+    static constexpr double MAX_X = 3.0;
+
+    // Scaled value is between MIN_X and MAX_X
+    mpe::dynamic_level_t range = MAX_SUPPORTED_LEVEL - MIN_SUPPORTED_LEVEL;
+    mpe::dynamic_level_t diff = level - MIN_SUPPORTED_LEVEL;
+    double scaled_val = (diff / static_cast<double>(range)) * (MAX_X - MIN_X) + MIN_X;
     if (level <= MIN_SUPPORTED_LEVEL) {
-        return 0.0;
+        scaled_val = MIN_X;
     }
 
     if (level >= MAX_SUPPORTED_LEVEL) {
-        return 1.0;
+        scaled_val = MAX_X;
     }
 
-    mpe::dynamic_level_t range = MAX_SUPPORTED_LEVEL - MIN_SUPPORTED_LEVEL;
-    mpe::dynamic_level_t diff = level - MIN_SUPPORTED_LEVEL;
-
-    return diff / static_cast<double>(range);
+    // Now use erf to scale
+    return 0.5 + erf(scaled_val) * 0.5;
 }
 
 ms_NoteArticulation MuseSamplerWrapper::noteArticulationTypes(const mpe::NoteEvent& noteEvent) const
