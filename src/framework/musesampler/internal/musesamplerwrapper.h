@@ -69,7 +69,6 @@ protected:
     ms_NoteArticulation convertArticulationType(mpe::ArticulationType articulation) const;
     ms_NoteArticulation noteArticulationTypes(const mpe::NoteEvent& noteEvent) const;
 
-
     async::Channel<unsigned int> m_audioChannelsCountChanged;
 
     MuseSamplerLibHandlerPtr m_samplerLib = nullptr;

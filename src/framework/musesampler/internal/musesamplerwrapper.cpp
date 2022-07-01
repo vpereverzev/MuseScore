@@ -41,7 +41,7 @@ static const std::unordered_map<mpe::ArticulationType, ms_NoteArticulation> ARTI
     { mpe::ArticulationType::Marcato, ms_NoteArticulation_Marcato },
     { mpe::ArticulationType::Harmonic, ms_NoteArticulation_Harmonics },
     { mpe::ArticulationType::Mute, ms_NoteArticulation_Mute },
-    { mpe::ArticulationType::Pedal, ms_NoteArticulation_Pedal},
+    { mpe::ArticulationType::Pedal, ms_NoteArticulation_Pedal },
     { mpe::ArticulationType::Trill, ms_NoteArticulation_WholeTrill },
     { mpe::ArticulationType::TrillBaroque, ms_NoteArticulation_WholeTrill },
 

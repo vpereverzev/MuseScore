@@ -61,8 +61,8 @@ typedef struct ms_OutputBuffer
 
 typedef struct ms_DynamicsEvent
 {
-  long _location_ms;
-  double _value; // 0.0 - 1.0
+    long _location_ms;
+    double _value; // 0.0 - 1.0
 } ms_DynamicsEvent;
 
 enum ms_NoteArticulation : uint64_t
@@ -124,7 +124,6 @@ typedef struct ms_NoteEvent
     ms_NoteArticulation _articulation;
 } ms_NoteEvent;
 
-
 typedef ms_Result (* ms_init)();
 typedef ms_InstrumentList (* ms_get_instrument_list)();
 typedef ms_InstrumentInfo (* ms_InstrumentList_get_next)(ms_InstrumentList instrument_list);
@@ -134,7 +133,7 @@ typedef const char*(* ms_Instrument_get_name)(ms_InstrumentInfo);
 typedef const char*(* ms_Instrument_get_musicxml_sound)(ms_InstrumentInfo);
 typedef const char*(* ms_Instrument_get_mpe_sound)(ms_InstrumentInfo);
 
-typedef ms_PresetList(* ms_Instrument_get_preset_list)(ms_InstrumentInfo);
+typedef ms_PresetList (* ms_Instrument_get_preset_list)(ms_InstrumentInfo);
 typedef const char*(* ms_PresetList_get_next)(ms_PresetList);
 
 typedef ms_MuseSampler (* ms_MuseSampler_create)();
@@ -156,7 +155,7 @@ typedef ms_Result (* ms_MuseSampler_add_track_event_range_start)(ms_MuseSampler,
 typedef ms_Result (* ms_MuseSampler_add_track_event_range_end)(ms_MuseSampler, ms_Track, ms_NoteArticulation);
 
 typedef ms_Result (* ms_MuseSampler_process)(ms_MuseSampler, ms_OutputBuffer, long long micros);
-typedef void (*ms_MuseSampler_set_position)(ms_MuseSampler, long long micros);
-typedef void (*ms_MuseSampler_set_playing)(ms_MuseSampler, int playing);
+typedef void (* ms_MuseSampler_set_position)(ms_MuseSampler, long long micros);
+typedef void (* ms_MuseSampler_set_playing)(ms_MuseSampler, int playing);
 
 #endif // MU_MUSESAMPLER_APITYPES_H
