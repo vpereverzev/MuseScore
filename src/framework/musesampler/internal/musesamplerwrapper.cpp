@@ -41,10 +41,9 @@ static const std::unordered_map<mpe::ArticulationType, ms_NoteArticulation> ARTI
     { mpe::ArticulationType::Marcato, ms_NoteArticulation_Marcato },
     { mpe::ArticulationType::Harmonic, ms_NoteArticulation_Harmonics },
     { mpe::ArticulationType::Mute, ms_NoteArticulation_Mute },
+    { mpe::ArticulationType::Pedal, ms_NoteArticulation_Pedal},
     { mpe::ArticulationType::Trill, ms_NoteArticulation_WholeTrill },
     { mpe::ArticulationType::TrillBaroque, ms_NoteArticulation_WholeTrill },
-
-    // Turn, Mordent
 
     { mpe::ArticulationType::Arpeggio, ms_NoteArticulation_ArpeggioUp },
     { mpe::ArticulationType::ArpeggioUp, ms_NoteArticulation_ArpeggioUp },
@@ -53,6 +52,9 @@ static const std::unordered_map<mpe::ArticulationType, ms_NoteArticulation> ARTI
     { mpe::ArticulationType::Tremolo16th, ms_NoteArticulation_Tremolo2 },
     { mpe::ArticulationType::Tremolo32nd, ms_NoteArticulation_Tremolo3 },
     { mpe::ArticulationType::Tremolo64th, ms_NoteArticulation_Tremolo3 },
+    { mpe::ArticulationType::DiscreteGlissando, ms_NoteArticulation_Glissando },
+    { mpe::ArticulationType::ContinuousGlissando, ms_NoteArticulation_Portamento },
+    { mpe::ArticulationType::Slide, ms_NoteArticulation_Portamento },
 
     { mpe::ArticulationType::Scoop, ms_NoteArticulation_Scoop },
     { mpe::ArticulationType::Plop, ms_NoteArticulation_Plop },
@@ -392,7 +394,7 @@ void MuseSamplerWrapper::addNoteEvent(const mpe::NoteEvent& noteEvent)
                 if (m_samplerLib->addTrackEventRangeEnd(m_sampler, m_track, ms_art) != ms_Result_OK) {
                     LOGE() << "Unable to add ranged articulation range end";
                 } else {
-                    LOGI() << "added end range for: " << static_cast<int>(ms_art); // TODO: remove
+                    LOGI() << "added end range for: " << static_cast<int>(ms_art);
                 }
             }
         }
