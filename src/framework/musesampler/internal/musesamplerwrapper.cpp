@@ -69,7 +69,14 @@ static const std::unordered_map<mpe::ArticulationType, ms_NoteArticulation> ARTI
     { mpe::ArticulationType::DiamondNote, ms_NoteArticulation_Diamond },
 
     { mpe::ArticulationType::Pizzicato, ms_NoteArticulation_Pizzicato },
-    { mpe::ArticulationType::SnapPizzicato, ms_NoteArticulation_Pizzicato }
+    { mpe::ArticulationType::SnapPizzicato, ms_NoteArticulation_SnapPizzicato },
+
+    { mpe::ArticulationType::UpperMordent, ms_NoteArticulation_MordentWhole },
+    { mpe::ArticulationType::UpMordent, ms_NoteArticulation_MordentWhole },
+    { mpe::ArticulationType::LowerMordent, ms_NoteArticulation_MordentInvertedWhole },
+    { mpe::ArticulationType::DownMordent, ms_NoteArticulation_MordentInvertedWhole },
+    { mpe::ArticulationType::Turn, ms_NoteArticulation_TurnWholeWhole },
+    { mpe::ArticulationType::InvertedTurn, ms_NoteArticulation_TurnInvertedWholeWhole },
 };
 
 MuseSamplerWrapper::MuseSamplerWrapper(MuseSamplerLibHandlerPtr samplerLib, const audio::AudioSourceParams& params)
@@ -353,6 +360,20 @@ void MuseSamplerWrapper::addNoteEvent(const mpe::NoteEvent& noteEvent)
     event._tempo = 0.0;
     event._articulation = noteArticulationTypes(noteEvent);
 
+    for (auto& art : noteEvent.expressionCtx().articulations) {
+        auto ms_art = convertArticulationType(art.first);
+        if (m_samplerLib->isRangedArticulation(ms_art)) {
+            // If this starts an articulation range, indicate the start
+            if (art.second.occupiedFrom == 0 && art.second.occupiedTo != mpe::HUNDRED_PERCENT) {
+                if (m_samplerLib->addTrackEventRangeStart(m_sampler, m_track, ms_art) != ms_Result_OK) {
+                    LOGE() << "Unable to add ranged articulation range end";
+                } else {
+                    LOGI() << "added start range for: " << static_cast<int>(ms_art);
+                }
+            }
+        }
+    }
+
     if (m_samplerLib->addNoteEvent(m_sampler, m_track, event) != ms_Result_OK) {
         LOGE() << "Unable to add event for track";
     } else {
@@ -360,6 +381,21 @@ void MuseSamplerWrapper::addNoteEvent(const mpe::NoteEvent& noteEvent)
                << ", timestamp: " << event._location_ms
                << ", duration: " << event._duration_ms
                << ", articulations flag: " << event._articulation;
+    }
+
+    for (auto& art : noteEvent.expressionCtx().articulations) {
+        auto ms_art = convertArticulationType(art.first);
+        if (m_samplerLib->isRangedArticulation(ms_art)) {
+            // If this ends an articulation range, indicate the end
+            LOGI() << "range: " << art.second.occupiedFrom << " to " << art.second.occupiedTo;
+            if (art.second.occupiedFrom != 0 && art.second.occupiedTo == mpe::HUNDRED_PERCENT) {
+                if (m_samplerLib->addTrackEventRangeEnd(m_sampler, m_track, ms_art) != ms_Result_OK) {
+                    LOGE() << "Unable to add ranged articulation range end";
+                } else {
+                    LOGI() << "added end range for: " << static_cast<int>(ms_art); // TODO: remove
+                }
+            }
+        }
     }
 }
 
@@ -409,6 +445,14 @@ double MuseSamplerWrapper::dynamicLevelRatio(const mpe::dynamic_level_t level) c
     return 0.5 + erf(scaled_val) * 0.5;
 }
 
+ms_NoteArticulation MuseSamplerWrapper::convertArticulationType(mpe::ArticulationType articulation) const
+{
+    if (auto search = ARTICULATION_TYPES.find(articulation); search != ARTICULATION_TYPES.cend()) {
+        return static_cast<ms_NoteArticulation>(search->second);
+    }
+    return static_cast<ms_NoteArticulation>(0);
+}
+
 ms_NoteArticulation MuseSamplerWrapper::noteArticulationTypes(const mpe::NoteEvent& noteEvent) const
 {
     uint64_t result = 0;
@@ -420,7 +464,7 @@ ms_NoteArticulation MuseSamplerWrapper::noteArticulationTypes(const mpe::NoteEve
             continue;
         }
 
-        result |= search->second;
+        result |= convertArticulationType(pair.first);
     }
 
     return static_cast<ms_NoteArticulation>(result);

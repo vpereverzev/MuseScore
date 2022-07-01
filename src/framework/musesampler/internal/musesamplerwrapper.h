@@ -66,6 +66,7 @@ protected:
     int pitchIndex(const mpe::pitch_level_t pitchLevel) const;
     double dynamicLevelRatio(const mpe::dynamic_level_t level) const;
 
+    ms_NoteArticulation convertArticulationType(mpe::ArticulationType articulation) const;
     ms_NoteArticulation noteArticulationTypes(const mpe::NoteEvent& noteEvent) const;
 
 
