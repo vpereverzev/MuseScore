@@ -111,6 +111,7 @@ enum ms_NoteArticulation : uint64_t
     ms_NoteArticulation_Glissando = 1LL << 40,
     ms_NoteArticulation_Pedal = 1LL << 41,
     ms_NoteArticulation_Slur = 1LL << 42,
+    ms_NoteArticulation_SnapPizzicato = 1LL << 43,
 };
 
 typedef struct ms_NoteEvent
@@ -150,9 +151,9 @@ typedef ms_Result (* ms_MuseSampler_clear_track)(ms_MuseSampler ms, ms_Track tra
 typedef ms_Result (* ms_MuseSampler_add_track_note_event)(ms_MuseSampler ms, ms_Track track, ms_NoteEvent evt);
 typedef ms_Result (* ms_MuseSampler_add_track_dynamics_event)(ms_MuseSampler ms, ms_Track track, ms_DynamicsEvent evt);
 
-typedef int (* ms_MuseSampler_is_ranged_articulation)(ms_MuseSampler ms, ms_NoteArticulation);
-typedef ms_Result (* ms_MuseSampler_add_track_event_range_start)(ms_MuseSampler ms, ms_Track);
-typedef ms_Result (* ms_MuseSampler_add_track_event_range_end)(ms_MuseSampler ms, ms_Track);
+typedef int (* ms_MuseSampler_is_ranged_articulation)(ms_NoteArticulation);
+typedef ms_Result (* ms_MuseSampler_add_track_event_range_start)(ms_MuseSampler, ms_Track, ms_NoteArticulation);
+typedef ms_Result (* ms_MuseSampler_add_track_event_range_end)(ms_MuseSampler, ms_Track, ms_NoteArticulation);
 
 typedef ms_Result (* ms_MuseSampler_process)(ms_MuseSampler, ms_OutputBuffer, long long micros);
 typedef void (*ms_MuseSampler_set_position)(ms_MuseSampler, long long micros);

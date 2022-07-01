@@ -62,9 +62,9 @@ struct MuseSamplerLibHandler
     ms_Result addDynamicsEvent(ms_MuseSampler ms, ms_Track track, ms_DynamicsEvent evt) { return ms_MuseSampler_add_track_dynamics_event(ms, track, evt); }
     ms_Result addNoteEvent(ms_MuseSampler ms, ms_Track track, ms_Event evt) { return ms_MuseSampler_add_track_note_event(ms, track, evt); }
 
-    bool isRangedArticulation(ms_MuseSampler ms, ms_NoteArticulation art) { return ms_MuseSampler_is_ranged_articulation(ms, art) == 1; }
-    ms_Result addTrackEventRangeStart(ms_MuseSampler ms, ms_Track track) { return ms_MuseSampler_add_track_event_range_start(ms, track); }
-    ms_Result addTrackEventRangeEnd(ms_MuseSampler ms, ms_Track track) { return ms_MuseSampler_add_track_event_range_end(ms, track); }
+    bool isRangedArticulation(ms_NoteArticulation art) { return ms_MuseSampler_is_ranged_articulation(art) == 1; }
+    ms_Result addTrackEventRangeStart(ms_MuseSampler ms, ms_Track track, ms_NoteArticulation art) { return ms_MuseSampler_add_track_event_range_start(ms, track, art); }
+    ms_Result addTrackEventRangeEnd(ms_MuseSampler ms, ms_Track track, ms_NoteArticulation art) { return ms_MuseSampler_add_track_event_range_end(ms, track, art); }
 
     void setPosition(ms_MuseSampler ms, long long micros) { return ms_MuseSampler_set_position(ms, micros); }
     void setPlaying(ms_MuseSampler ms, bool playing) { return ms_MuseSampler_set_playing(ms, playing ? 1 : 0); }
