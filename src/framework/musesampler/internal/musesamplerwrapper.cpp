@@ -367,7 +367,7 @@ void MuseSamplerWrapper::addNoteEvent(const mpe::NoteEvent& noteEvent)
         if (m_samplerLib->isRangedArticulation(ms_art)) {
             // If this starts an articulation range, indicate the start
             if (art.second.occupiedFrom == 0 && art.second.occupiedTo != mpe::HUNDRED_PERCENT) {
-                if (m_samplerLib->addTrackEventRangeStart(m_sampler, m_track, ms_art) != ms_Result_OK) {
+                if (m_samplerLib->addTrackEventRangeStart(m_sampler, m_track, event._voice, ms_art) != ms_Result_OK) {
                     LOGE() << "Unable to add ranged articulation range end";
                 } else {
                     LOGI() << "added start range for: " << static_cast<int>(ms_art);
@@ -391,7 +391,7 @@ void MuseSamplerWrapper::addNoteEvent(const mpe::NoteEvent& noteEvent)
             // If this ends an articulation range, indicate the end
             LOGI() << "range: " << art.second.occupiedFrom << " to " << art.second.occupiedTo;
             if (art.second.occupiedFrom != 0 && art.second.occupiedTo == mpe::HUNDRED_PERCENT) {
-                if (m_samplerLib->addTrackEventRangeEnd(m_sampler, m_track, ms_art) != ms_Result_OK) {
+                if (m_samplerLib->addTrackEventRangeEnd(m_sampler, m_track, event._voice, ms_art) != ms_Result_OK) {
                     LOGE() << "Unable to add ranged articulation range end";
                 } else {
                     LOGI() << "added end range for: " << static_cast<int>(ms_art);

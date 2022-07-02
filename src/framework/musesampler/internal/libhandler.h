@@ -66,13 +66,13 @@ struct MuseSamplerLibHandler
     ms_Result addNoteEvent(ms_MuseSampler ms, ms_Track track, ms_Event evt) { return ms_MuseSampler_add_track_note_event(ms, track, evt); }
 
     bool isRangedArticulation(ms_NoteArticulation art) { return ms_MuseSampler_is_ranged_articulation(art) == 1; }
-    ms_Result addTrackEventRangeStart(ms_MuseSampler ms, ms_Track track, ms_NoteArticulation art)
+    ms_Result addTrackEventRangeStart(ms_MuseSampler ms, ms_Track track, int voice, ms_NoteArticulation art)
     {
-        return ms_MuseSampler_add_track_event_range_start(ms, track, art);
+        return ms_MuseSampler_add_track_event_range_start(ms, track, voice, art);
     }
-    ms_Result addTrackEventRangeEnd(ms_MuseSampler ms, ms_Track track, ms_NoteArticulation art)
+    ms_Result addTrackEventRangeEnd(ms_MuseSampler ms, ms_Track track, int voice, ms_NoteArticulation art)
     {
-        return ms_MuseSampler_add_track_event_range_end(ms, track, art);
+        return ms_MuseSampler_add_track_event_range_end(ms, track, voice, art);
     }
 
     void setPosition(ms_MuseSampler ms, long long micros) { return ms_MuseSampler_set_position(ms, micros); }
