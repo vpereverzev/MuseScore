@@ -25,6 +25,7 @@
 #include <cstring>
 
 #include "realfn.h"
+#include "soundid_stringify.h"
 
 using namespace mu;
 using namespace mu::audio;
@@ -188,33 +189,39 @@ void MuseSamplerWrapper::setupSound(const mpe::PlaybackSetupData& setupData)
         return;
     }
 
-    auto instrumentList = m_samplerLib->getInstrumentList();
-    if (instrumentList == nullptr) {
+    auto mpe_id = mpe::MpeIdToString(setupData.id, setupData.category, setupData.subCategorySet);
+    auto matchingInstrumentList = m_samplerLib->getMatchingInstrumentList(mpe_id.c_str(), setupData.musicXmlSoundId->c_str());
+
+    if (matchingInstrumentList == nullptr) {
         LOGE() << "Unable to get instrument list";
         return;
     } else {
         LOGI() << "Successfully got instrument list";
     }
 
+    int firstInternalId = -1;
     int internalId = -1;
 
-    while (auto instrument = m_samplerLib->getNextInstrument(instrumentList))
+    // TODO: display all of these in MuseScore, and let the user choose!
+    while (auto instrument = m_samplerLib->getNextInstrument(matchingInstrumentList))
     {
         internalId = m_samplerLib->getInstrumentId(instrument);
         const char* internalName = m_samplerLib->getInstrumentName(instrument);
+        const char* instrumentPack = m_samplerLib->getInstrumentPackage(instrument);
         const char* musicXmlId = m_samplerLib->getMusicXmlSoundId(instrument);
 
         LOGD() << internalId
+               << ": " << instrumentPack
                << ": " << internalName
                << " - " << musicXmlId;
 
-        if (std::strcmp(setupData.musicXmlSoundId->data(), musicXmlId) == 0) {
-            break;
-        }
+        // For now, hack to just choose first instrument:
+        if (firstInternalId == -1)
+            firstInternalId = internalId;
     }
 
-    if (internalId == -1) {
-        LOGE() << "Unable to find sound for " << setupData.musicXmlSoundId.value();
+    if (firstInternalId == -1) {
+        LOGE() << "Unable to find sound for " << mpe_id << " - " << setupData.musicXmlSoundId.value();
         return;
     }
 
@@ -368,7 +375,7 @@ void MuseSamplerWrapper::addNoteEvent(const mpe::NoteEvent& noteEvent)
             // If this starts an articulation range, indicate the start
             if (art.second.occupiedFrom == 0 && art.second.occupiedTo != mpe::HUNDRED_PERCENT) {
                 if (m_samplerLib->addTrackEventRangeStart(m_sampler, m_track, event._voice, ms_art) != ms_Result_OK) {
-                    LOGE() << "Unable to add ranged articulation range end";
+                    LOGE() << "Unable to add ranged articulation range start";
                 } else {
                     LOGI() << "added start range for: " << static_cast<int>(ms_art);
                 }

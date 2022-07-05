@@ -37,10 +37,19 @@ namespace mu::musesampler {
 struct MuseSamplerLibHandler
 {
     ms_Result initLib() { return ms_init(); }
+    bool containsInstrument(const char* mpe_id, const char* musicxml)
+    {
+        return ms_contains_instrument(mpe_id, musicxml) == 1;
+    }
     ms_InstrumentList getInstrumentList() { return ms_get_instrument_list(); }
+    ms_InstrumentList getMatchingInstrumentList(const char* mpe_id, const char* musicxml)
+    {
+        return ms_get_matching_instrument_list(mpe_id, musicxml);
+    }
     ms_InstrumentInfo getNextInstrument(ms_InstrumentList instrument_list) { return ms_InstrumentList_get_next(instrument_list); }
     int getInstrumentId(ms_InstrumentInfo instrument) { return ms_Instrument_get_id(instrument); }
     const char* getInstrumentName(ms_InstrumentInfo instrument) { return ms_Instrument_get_name(instrument); }
+    const char* getInstrumentPackage(ms_InstrumentInfo instrument) { return ms_Instrument_get_package(instrument); }
     const char* getMusicXmlSoundId(ms_InstrumentInfo instrument) { return ms_Instrument_get_musicxml_sound(instrument); }
     const char* getMpeSoundId(ms_InstrumentInfo instrument) { return ms_Instrument_get_mpe_sound(instrument); }
 
@@ -79,23 +88,6 @@ struct MuseSamplerLibHandler
     void setPlaying(ms_MuseSampler ms, bool playing) { return ms_MuseSampler_set_playing(ms, playing ? 1 : 0); }
     ms_Result process(ms_MuseSampler ms, ms_OutputBuffer buff, long long micros) { return ms_MuseSampler_process(ms, buff, micros); }
 
-    bool containsInstrument(const char* musicXmlSoundId)
-    {
-        auto instrumentList = getInstrumentList();
-        if (instrumentList == nullptr) {
-            return false;
-        }
-
-        while (auto instrument = getNextInstrument(instrumentList))
-        {
-            if (std::strcmp(getMusicXmlSoundId(instrument), musicXmlSoundId) == 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     MuseSamplerLibHandler(const char* /*path*/)
     {
         initLib();
@@ -110,10 +102,14 @@ struct MuseSamplerLibHandler
 struct MuseSamplerLibHandler
 {
     ms_init initLib = nullptr;
+    ms_contains_instrument containsInstrument = nullptr;
+
     ms_get_instrument_list getInstrumentList = nullptr;
+    ms_get_matching_instrument_list getMatchingInstrumentList = nullptr;
     ms_InstrumentList_get_next getNextInstrument = nullptr;
     ms_Instrument_get_id getInstrumentId = nullptr;
     ms_Instrument_get_name getInstrumentName = nullptr;
+    ms_Instrument_get_package getInstrumentPackage = nullptr;
     ms_Instrument_get_musicxml_sound getMusicXmlSoundId = nullptr;
     ms_Instrument_get_mpe_sound getMpeSoundId = nullptr;
 
@@ -139,39 +135,6 @@ struct MuseSamplerLibHandler
     ms_MuseSampler_set_playing setPlaying = nullptr;
     ms_MuseSampler_process process = nullptr;
 
-    bool containsInstrument(const char* musicXmlSoundId)
-    {
-        if (!isValid()) {
-            LOGE() << "MuseSampler lib is not valid";
-
-            printApiStatus();
-
-            return false;
-        }
-
-        auto instrumentList = getInstrumentList();
-        if (instrumentList == nullptr) {
-            return false;
-        }
-
-        LOGD() << "Looking for available instruments";
-
-        while (auto instrument = getNextInstrument(instrumentList))
-        {
-            LOGD() << "MusicXml ID: " << getMusicXmlSoundId(instrument);
-            LOGD() << "MPE Sound ID: " << getMpeSoundId(instrument);
-
-            if (std::strcmp(getMusicXmlSoundId(instrument), musicXmlSoundId) == 0) {
-                LOGD() << "Found matching instrument, id: " << musicXmlSoundId;
-                return true;
-            }
-        }
-
-        LOGD() << "Unable to find any instrument sounds for ID: " << musicXmlSoundId;
-
-        return false;
-    }
-
     MuseSamplerLibHandler(const char* path)
     {
         m_lib = dlopen(path, RTLD_LAZY);
@@ -182,10 +145,13 @@ struct MuseSamplerLibHandler
         }
 
         initLib = (ms_init)dlsym(m_lib, "ms_init");
+        containsInstrument = (ms_contains_instrument)dlsym(m_lib, "ms_contains_instrument");
         getInstrumentList = (ms_get_instrument_list)dlsym(m_lib, "ms_get_instrument_list");
+        getMatchingInstrumentList = (ms_get_matching_instrument_list)dlsym(m_lib, "ms_get_matching_instrument_list");
         getNextInstrument = (ms_InstrumentList_get_next)dlsym(m_lib, "ms_InstrumentList_get_next");
         getInstrumentId = (ms_Instrument_get_id)dlsym(m_lib, "ms_Instrument_get_id");
         getInstrumentName = (ms_Instrument_get_name)dlsym(m_lib, "ms_Instrument_get_name");
+        getInstrumentPackage = (ms_Instrument_get_package)dlsym(m_lib, "ms_Instrument_get_package");
         getMusicXmlSoundId = (ms_Instrument_get_musicxml_sound)dlsym(m_lib, "ms_Instrument_get_musicxml_sound");
         getMpeSoundId = (ms_Instrument_get_mpe_sound)dlsym(m_lib, "ms_Instrument_get_mpe_sound");
 
@@ -228,10 +194,13 @@ struct MuseSamplerLibHandler
     {
         return m_lib
                && initLib
+               && containsInstrument
                && getInstrumentList
+               && getMatchingInstrumentList
                && getNextInstrument
                && getInstrumentId
                && getInstrumentName
+               && getInstrumentPackage
                && getMusicXmlSoundId
                && getMpeSoundId
                && getPresetList
@@ -257,10 +226,13 @@ private:
     void printApiStatus() const
     {
         LOGI() << "MuseSampler API status:"
+               << "\n ms_contains_instrument -" << reinterpret_cast<uint64_t>(containsInstrument)
                << "\n ms_get_instrument_list -" << reinterpret_cast<uint64_t>(getInstrumentList)
+               << "\n ms_get_matching_instrument_list -" << reinterpret_cast<uint64_t>(getMatchingInstrumentList)
                << "\n ms_InstrumentList_get_next - " << reinterpret_cast<uint64_t>(getNextInstrument)
                << "\n ms_Instrument_get_id - " << reinterpret_cast<uint64_t>(getInstrumentId)
                << "\n ms_Instrument_get_name - " << reinterpret_cast<uint64_t>(getInstrumentName)
+               << "\n ms_Instrument_get_package - " << reinterpret_cast<uint64_t>(getInstrumentPackage)
                << "\n ms_Instrument_get_musicxml_sound - " << reinterpret_cast<uint64_t>(getMusicXmlSoundId)
                << "\n ms_Instrument_get_mpe_sound - " << reinterpret_cast<uint64_t>(getMpeSoundId)
                << "\n ms_Instrument_get_preset_list - " << reinterpret_cast<uint64_t>(getPresetList)

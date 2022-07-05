@@ -124,11 +124,14 @@ typedef struct ms_NoteEvent
 } ms_NoteEvent;
 
 typedef ms_Result (* ms_init)();
+typedef int (* ms_contains_instrument)(const char* mpe_id, const char* musicxml_id);
 typedef ms_InstrumentList (* ms_get_instrument_list)();
+typedef ms_InstrumentList (* ms_get_matching_instrument_list)(const char* mpe_id, const char* musicxml_id);
 typedef ms_InstrumentInfo (* ms_InstrumentList_get_next)(ms_InstrumentList instrument_list);
 
 typedef int (* ms_Instrument_get_id)(ms_InstrumentInfo instrument);
 typedef const char*(* ms_Instrument_get_name)(ms_InstrumentInfo);
+typedef const char*(* ms_Instrument_get_package)(ms_InstrumentInfo);
 typedef const char*(* ms_Instrument_get_musicxml_sound)(ms_InstrumentInfo);
 typedef const char*(* ms_Instrument_get_mpe_sound)(ms_InstrumentInfo);
 

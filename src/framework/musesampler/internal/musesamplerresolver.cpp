@@ -25,6 +25,7 @@
 #include "log.h"
 
 #include "musesamplerwrapper.h"
+#include "soundid_stringify.h"
 
 using namespace mu;
 using namespace mu::async;
@@ -63,14 +64,15 @@ bool MuseSamplerResolver::hasCompatibleResources(const audio::PlaybackSetupData&
         return false;
     }
 
-    return m_libHandler->containsInstrument(setup.musicXmlSoundId.value().data());
+    auto mpe_id = mpe::MpeIdToString(setup.id, setup.category, setup.subCategorySet);
+    return m_libHandler->containsInstrument(mpe_id.c_str(), setup.musicXmlSoundId->c_str());
 }
 
 AudioResourceMetaList MuseSamplerResolver::resolveResources() const
 {
     static AudioResourceMetaList result {
         {
-            "MSO",
+            "Muse Sounds",
             AudioResourceType::MuseSamplerSoundPack,
             "Muse",
             /*hasNativeEditorSupport*/ false
