@@ -225,7 +225,7 @@ void MuseSamplerWrapper::setupSound(const mpe::PlaybackSetupData& setupData)
         return;
     }
 
-    m_track = m_samplerLib->addTrack(m_sampler, internalId);
+    m_track = m_samplerLib->addTrack(m_sampler, firstInternalId);
 }
 
 void MuseSamplerWrapper::setupEvents(const mpe::PlaybackData& playbackData)
