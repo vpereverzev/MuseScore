@@ -111,6 +111,9 @@ enum ms_NoteArticulation : uint64_t
     ms_NoteArticulation_Pedal = 1LL << 40,
     ms_NoteArticulation_Slur = 1LL << 41,
     ms_NoteArticulation_SnapPizzicato = 1LL << 42,
+    ms_NoteArticulation_ColLegno = 1LL << 43,
+    ms_NoteArticulation_SulTasto = 1LL << 44,
+    ms_NoteArticulation_SulPonticello = 1LL << 45,
 };
 
 typedef struct ms_NoteEvent

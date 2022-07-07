@@ -80,6 +80,10 @@ static const std::unordered_map<mpe::ArticulationType, ms_NoteArticulation> ARTI
     { mpe::ArticulationType::DownMordent, ms_NoteArticulation_MordentInvertedWhole },
     { mpe::ArticulationType::Turn, ms_NoteArticulation_TurnWholeWhole },
     { mpe::ArticulationType::InvertedTurn, ms_NoteArticulation_TurnInvertedWholeWhole },
+
+    { mpe::ArticulationType::ColLegno, ms_NoteArticulation_ColLegno },
+    { mpe::ArticulationType::SulTasto, ms_NoteArticulation_SulTasto },
+    { mpe::ArticulationType::SulPont, ms_NoteArticulation_SulPonticello },
 };
 
 MuseSamplerWrapper::MuseSamplerWrapper(MuseSamplerLibHandlerPtr samplerLib, const audio::AudioSourceParams& params)
