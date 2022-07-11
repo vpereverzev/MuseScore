@@ -44,12 +44,12 @@ protected:
         m_octave = 4;
 
         // [GIVEN] Expression data of the note - no dynamic/articulations modifiers
-        m_nominalDynamic = dynamicLevelFromType(DynamicType::Natural);
+        m_nominalDynamic = dynamicLevelFromType(DynamicType::mf);
 
         // [GIVEN] Articulation pattern "None", which means that note should be played without any modifications
         m_standardPattern.arrangementPattern = createArrangementPattern(HUNDRED_PERCENT /*duration_factor*/, 0 /*timestamp_offset*/);
         m_standardPattern.pitchPattern = createSimplePitchPattern(0 /*increment_pitch_diff*/);
-        m_standardPattern.expressionPattern = createSimpleExpressionPattern(dynamicLevelFromType(DynamicType::Natural));
+        m_standardPattern.expressionPattern = createSimpleExpressionPattern(dynamicLevelFromType(DynamicType::mf));
     }
 
     timestamp_t m_nominalTimestamp;
@@ -195,7 +195,7 @@ TEST_F(Engraving_SingleNoteArticulationsTest, AccentPattern)
     EXPECT_EQ(event.arrangementCtx().nominalDuration, m_nominalDuration);
 
     // [THEN] We expect the nominal dynamic type is still unchanged
-    EXPECT_EQ(event.expressionCtx().nominalDynamicLevel, dynamicLevelFromType(DynamicType::Natural));
+    EXPECT_EQ(event.expressionCtx().nominalDynamicLevel, dynamicLevelFromType(DynamicType::mf));
 
     // [THEN] However, an amplitude dynamic value in ExpressionCurve has been increased on single level due to Accent Pattern
     EXPECT_EQ(event.expressionCtx().expressionCurve.maxAmplitudeLevel(), dynamicLevelFromType(DynamicType::mf));

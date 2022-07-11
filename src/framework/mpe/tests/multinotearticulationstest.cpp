@@ -70,7 +70,7 @@ protected:
         // [GIVEN] Articulation pattern "Standard", which means that note should be played without any modifications
         m_standardPattern.arrangementPattern = createArrangementPattern(HUNDRED_PERCENT /*duration_factor*/, 0 /*timestamp_offset*/);
         m_standardPattern.pitchPattern = createSimplePitchPattern(0 /*increment_pitch_diff*/);
-        m_standardPattern.expressionPattern = createSimpleExpressionPattern(dynamicLevelFromType(DynamicType::Natural));
+        m_standardPattern.expressionPattern = createSimpleExpressionPattern(dynamicLevelFromType(DynamicType::mf));
     }
 
     struct NoteMetaData {
@@ -163,7 +163,7 @@ TEST_F(Engraving_MultiNoteArticulationsTest, GlissandoPattern)
     glissandoPattern.arrangementPattern = createArrangementPattern(HUNDRED_PERCENT /*duration_factor*/, 0 /*timestamp_offset*/);
     glissandoPattern.pitchPattern = createSimplePitchPattern(pitchDiff / (MAX_PITCH_LEVEL / TEN_PERCENT) /*increment_pitch_diff*/);
     glissandoPattern.expressionPattern
-        = createSimpleExpressionPattern(dynamicLevelFromType(DynamicType::Natural) /* no dynamic changes comparing to the natural one*/);
+        = createSimpleExpressionPattern(dynamicLevelFromType(DynamicType::mf) /* no dynamic changes comparing to the natural one*/);
 
     ArticulationPattern glissandoScope;
     glissandoScope.emplace(0, glissandoPattern);
@@ -267,7 +267,7 @@ TEST_F(Engraving_MultiNoteArticulationsTest, CrescendoPattern)
         crescendoPattern.arrangementPattern = createArrangementPattern(HUNDRED_PERCENT /*duration_factor*/, 0 /*timestamp_offset*/);
         crescendoPattern.pitchPattern = createSimplePitchPattern(0 /*increment_pitch_diff*/);
         crescendoPattern.expressionPattern = createSimpleExpressionPattern(dynamicLevelFromType(
-                                                                               DynamicType::Natural) + i * DYNAMIC_LEVEL_STEP
+                                                                               DynamicType::mf) + i * DYNAMIC_LEVEL_STEP
                                                                            / dynamicSegmentsCount);
 
         crescendoScope.emplace(25 * ONE_PERCENT * i, std::move(crescendoPattern));

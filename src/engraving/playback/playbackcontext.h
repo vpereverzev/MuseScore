@@ -48,7 +48,7 @@ public:
     mpe::DynamicLevelMap dynamicLevelMap(const Score* score) const;
 
 private:
-    mpe::dynamic_level_t nominalDynamicLevel(const int positionTick) const;
+    std::optional<mpe::dynamic_level_t> nominalDynamicLevel(const int positionTick) const;
 
     void updateDynamicMap(const Dynamic* dynamic, const Segment* segment, const int segmentPositionTick);
     void updatePlayTechMap(const PlayTechAnnotation* annotation, const int segmentPositionTick);

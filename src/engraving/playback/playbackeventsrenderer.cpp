@@ -124,7 +124,7 @@ void PlaybackEventsRenderer::renderChordSymbol(const Harmony* chordSymbol,
                                            duration,
                                            voiceIdx,
                                            pitchLevel,
-                                           dynamicLevelFromType(mpe::DynamicType::Natural),
+                                           dynamicLevelFromType(mpe::DynamicType::mf),
                                            emptyArticulations));
     }
 }
@@ -159,7 +159,7 @@ void PlaybackEventsRenderer::renderMetronome(const Score* score, const int measu
                                                            durationFromTicks(bps.val, ticksPerBeat, ticksPerBeat),
                                                            0,
                                                            eventPitchLevel,
-                                                           dynamicLevelFromType(mpe::DynamicType::Natural),
+                                                           dynamicLevelFromType(mpe::DynamicType::mf),
                                                            emptyArticulations));
     }
 }

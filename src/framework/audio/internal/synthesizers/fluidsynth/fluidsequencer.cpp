@@ -250,14 +250,6 @@ int FluidSequencer::expressionLevel(const mpe::dynamic_level_t dynamicLevel) con
 
     float stepCount = ((dynamicLevel - MIN_SUPPORTED_LEVEL) / static_cast<float>(mpe::DYNAMIC_LEVEL_STEP));
 
-    if (dynamicLevel == mpe::dynamicLevelFromType(DynamicType::Natural)) {
-        stepCount -= 0.5;
-    }
-
-    if (dynamicLevel > mpe::dynamicLevelFromType(DynamicType::Natural)) {
-        stepCount -= 1;
-    }
-
     dynamic_level_t result = RealRound(MIN_SUPPORTED_VOLUME + (stepCount * VOLUME_STEP), 0);
 
     return std::min(result, MAX_SUPPORTED_LEVEL);

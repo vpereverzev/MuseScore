@@ -309,17 +309,17 @@ constexpr dynamic_level_t DYNAMIC_LEVEL_STEP = 5 * ONE_PERCENT;
 
 enum class DynamicType {
     Undefined = -1,
-    ppppppppp = MIN_DYNAMIC_LEVEL,
-    pppppppp = 5 * ONE_PERCENT,
-    ppppppp = 10 * ONE_PERCENT,
-    pppppp = 15 * ONE_PERCENT,
-    ppppp = 20 * ONE_PERCENT,
-    pppp = 25 * ONE_PERCENT,
-    ppp = 30 * ONE_PERCENT,
-    pp = 35 * ONE_PERCENT,
-    p = 40 * ONE_PERCENT,
-    mp = 45 * ONE_PERCENT,
-    Natural = 50 * ONE_PERCENT,
+    pppppppppp = MIN_DYNAMIC_LEVEL,
+    ppppppppp = 5 * ONE_PERCENT,
+    pppppppp = 10 * ONE_PERCENT,
+    ppppppp = 15 * ONE_PERCENT,
+    pppppp = 20 * ONE_PERCENT,
+    ppppp = 25 * ONE_PERCENT,
+    pppp = 30 * ONE_PERCENT,
+    ppp = 35 * ONE_PERCENT,
+    pp = 40 * ONE_PERCENT,
+    p = 45 * ONE_PERCENT,
+    mp = 50 * ONE_PERCENT,
     mf = 55 * ONE_PERCENT,
     f = 60 * ONE_PERCENT,
     ff = 65 * ONE_PERCENT,
@@ -711,18 +711,15 @@ private:
         auto segmentDynamicOffsetIt = segment.expressionPattern.dynamicOffsetMap.cbegin();
         auto segmentPitchOffsetIt = segment.pitchPattern.pitchOffsetMap.cbegin();
 
-        bool hasMeaningDynamicOffset = segment.expressionPattern.maxAmplitudeLevel() != dynamicLevelFromType(DynamicType::Natural);
         bool hasMeaningPitchOffset = segment.pitchPattern.maxAmplitudeLevel() != 0;
 
-        if (!hasMeaningDynamicOffset && !hasMeaningPitchOffset) {
+        if (!hasMeaningPitchOffset) {
             return;
         }
 
         while (segmentDynamicOffsetIt != segment.expressionPattern.dynamicOffsetMap.cend()
                && segmentPitchOffsetIt != segment.pitchPattern.pitchOffsetMap.cend()) {
-            if (hasMeaningDynamicOffset) {
-                averageDynamicOffsetIt->second += segmentDynamicOffsetIt->second;
-            }
+            averageDynamicOffsetIt->second += segmentDynamicOffsetIt->second;
 
             if (hasMeaningPitchOffset) {
                 averagePitchOffsetIt->second += segmentPitchOffsetIt->second;
@@ -776,7 +773,7 @@ private:
 
         for (auto it = cbegin(); it != cend(); ++it) {
             dynamic_level_t amplitudeDynamicLevel = it->second.appliedPatternSegment.expressionPattern.maxAmplitudeLevel();
-            dynamic_level_t dynamicLevelOffset = std::abs(amplitudeDynamicLevel - dynamicLevelFromType(DynamicType::Natural));
+            dynamic_level_t dynamicLevelOffset = std::abs(amplitudeDynamicLevel - dynamicLevelFromType(DynamicType::mf));
 
             if (dynamicLevelOffset != 0) {
                 dynamicChangesCount++;
