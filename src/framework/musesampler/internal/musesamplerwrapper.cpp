@@ -382,7 +382,7 @@ void MuseSamplerWrapper::addNoteEvent(const mpe::NoteEvent& noteEvent)
     event._location_ms = noteEvent.arrangementCtx().nominalTimestamp;
     event._duration_ms = noteEvent.arrangementCtx().nominalDuration;
     event._pitch = pitchIndex(noteEvent.pitchCtx().nominalPitchLevel);
-    event._tempo = 0.0;
+    event._tempo = noteEvent.arrangementCtx().bps;
     event._articulation = noteArticulationTypes(noteEvent);
 
     for (auto& art : noteEvent.expressionCtx().articulations) {
