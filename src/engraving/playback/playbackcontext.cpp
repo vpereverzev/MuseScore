@@ -213,6 +213,11 @@ void PlaybackContext::handleSpanners(const ID partId, const Score* score, const 
         for (const auto& pair : dynamicsCurve) {
             m_dynamicsMap.insert_or_assign(spannerFrom + pair.first + tickPositionOffset, nominalLevelFrom + pair.second);
         }
+
+        // In any case, switch to dynamic explicitly specified at end of curve (e.g., for a mf > f curve)
+        if (nominalLevelTo.has_value()) {
+            m_dynamicsMap.insert_or_assign(spannerFrom + dynamicsCurve.rbegin()->first, static_cast<int>(*nominalLevelTo));
+        }
     }
 }
 
