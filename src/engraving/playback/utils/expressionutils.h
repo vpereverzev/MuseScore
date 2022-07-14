@@ -87,7 +87,7 @@ inline mpe::dynamic_level_t dynamicLevelFromType(const DynamicType type,
 inline mpe::dynamic_level_t dynamicLevelRangeByTypes(const DynamicType dynamicTypeFrom,
                                                      const DynamicType dynamicTypeTo,
                                                      const mpe::dynamic_level_t nominalDynamicLevelFrom,
-                                                     const std::optional<mpe::dynamic_level_t> nominalDynamicLevelTo,
+                                                     std::optional<mpe::dynamic_level_t> nominalDynamicLevelTo,
                                                      const bool isCrescendo)
 {
     mpe::dynamic_level_t dynamicLevelFrom = 0;
@@ -100,10 +100,13 @@ inline mpe::dynamic_level_t dynamicLevelRangeByTypes(const DynamicType dynamicTy
         defaultStep = -mpe::DYNAMIC_LEVEL_STEP;
     }
 
-    if (!nominalDynamicLevelTo.has_value()) {
-        dynamicLevelTo = dynamicLevelFromType(dynamicTypeTo, dynamicLevelFrom + defaultStep);
-    } else {
+    // Sanity check direction of crescendo is valid; handles cases like
+    // f < p, and ensures they crescendo first and then set step dynamic change
+    // instead of doing a decrescendo.
+    if (nominalDynamicLevelTo.has_value() && (isCrescendo == (*nominalDynamicLevelTo > nominalDynamicLevelFrom))) {
         dynamicLevelTo = dynamicLevelFromType(dynamicTypeTo, *nominalDynamicLevelTo);
+    } else {
+        dynamicLevelTo = dynamicLevelFromType(dynamicTypeTo, dynamicLevelFrom + defaultStep);
     }
 
     return dynamicLevelTo - dynamicLevelFrom;
