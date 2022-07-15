@@ -84,6 +84,17 @@ struct MuseSamplerLibHandler
         return ms_MuseSampler_add_track_event_range_end(ms, track, voice, art);
     }
 
+    ms_Result startAuditionMode(ms_MuseSampler ms) { return ms_MuseSampler_start_audition_mode(ms); }
+    ms_Result stopAuditionMode(ms_MuseSampler ms) { return ms_MuseSampler_stop_audition_mode(ms); }
+    ms_Result startNote(ms_MuseSampler ms, ms_Track track, ms_AuditionStartNoteEvent evt)
+    {
+        return ms_MuseSampler_start_note(ms, track, evt);
+    }
+    ms_Result stopNote(ms_MuseSampler ms, ms_Track track, ms_AuditionStopNoteEvent evt)
+    {
+        return ms_MuseSampler_stop_note(ms, track, evt);
+    }
+
     void setPosition(ms_MuseSampler ms, long long micros) { return ms_MuseSampler_set_position(ms, micros); }
     void setPlaying(ms_MuseSampler ms, bool playing) { return ms_MuseSampler_set_playing(ms, playing ? 1 : 0); }
     ms_Result process(ms_MuseSampler ms, ms_OutputBuffer buff, long long micros) { return ms_MuseSampler_process(ms, buff, micros); }
@@ -131,6 +142,11 @@ struct MuseSamplerLibHandler
     ms_MuseSampler_add_track_event_range_start addTrackEventRangeStart = nullptr;
     ms_MuseSampler_add_track_event_range_end addTrackEventRangeEnd = nullptr;
 
+    ms_MuseSampler_start_audition_mode startAuditionMode = nullptr;
+    ms_MuseSampler_stop_audition_mode stopAuditionMode = nullptr;
+    ms_MuseSampler_start_note startNote = nullptr;
+    ms_MuseSampler_stop_note stopNote = nullptr;
+
     ms_MuseSampler_set_position setPosition = nullptr;
     ms_MuseSampler_set_playing setPlaying = nullptr;
     ms_MuseSampler_process process = nullptr;
@@ -173,6 +189,11 @@ struct MuseSamplerLibHandler
         isRangedArticulation = (ms_MuseSampler_is_ranged_articulation)dlsym(m_lib, "ms_MuseSampler_is_ranged_articulation");
         addTrackEventRangeStart = (ms_MuseSampler_add_track_event_range_start)dlsym(m_lib, "ms_MuseSampler_add_track_event_range_start");
         addTrackEventRangeEnd = (ms_MuseSampler_add_track_event_range_end)dlsym(m_lib, "ms_MuseSampler_add_track_event_range_end");
+
+        startAuditionMode = (ms_MuseSampler_start_audition_mode)dlsym(m_lib, "ms_MuseSampler_start_audition_mode");
+        stopAuditionMode = (ms_MuseSampler_stop_audition_mode)dlsym(m_lib, "ms_MuseSampler_stop_audition_mode");
+        startNote = (ms_MuseSampler_start_note)dlsym(m_lib, "startNote");
+        stopNote = (ms_MuseSampler_stop_note)dlsym(m_lib, "stopNote");
 
         setPosition = (ms_MuseSampler_set_position)dlsym(m_lib, "ms_MuseSampler_set_position");
         setPlaying = (ms_MuseSampler_set_playing)dlsym(m_lib, "ms_MuseSampler_set_playing");
@@ -219,6 +240,10 @@ struct MuseSamplerLibHandler
                && isRangedArticulation
                && addTrackEventRangeStart
                && addTrackEventRangeEnd
+               && startAuditionMode
+               && stopAuditionMode
+               && startNote
+               && stopNote
                && process;
     }
 
@@ -245,6 +270,10 @@ private:
                << "\n ms_MuseSampler_finalize_track - " << reinterpret_cast<uint64_t>(finalizeTrack)
                << "\n ms_MuseSampler_add_track_dynamics_event - " << reinterpret_cast<uint64_t>(addDynamicsEvent)
                << "\n ms_MuseSampler_add_track_note_event - " << reinterpret_cast<uint64_t>(addNoteEvent)
+               << "\n ms_MuseSampler_start_audition_mode - " << reinterpret_cast<uint64_t>(startAuditionMode)
+               << "\n ms_MuseSampler_stop_audition_mode - " << reinterpret_cast<uint64_t>(stopAuditionMode)
+               << "\n ms_MuseSampler_start_note - " << reinterpret_cast<uint64_t>(startNote)
+               << "\n ms_MuseSampler_stop_note - " << reinterpret_cast<uint64_t>(stopNote)
                << "\n ms_MuseSampler_set_position - " << reinterpret_cast<uint64_t>(setPosition)
                << "\n ms_MuseSampler_set_playing - " << reinterpret_cast<uint64_t>(setPlaying)
                << "\n ms_MuseSampler_process - " << reinterpret_cast<uint64_t>(process);

@@ -123,6 +123,18 @@ typedef struct ms_NoteEvent
     ms_NoteArticulation _articulation;
 } ms_NoteEvent;
 
+typedef struct ms_AuditionStartNoteEvent
+{
+    int _pitch; // MIDI pitch
+    ms_NoteArticulation _articulation;
+    double _dynamics;
+} ms_AuditionStartNoteEvent;
+
+typedef struct ms_AuditionStopNoteEvent
+{
+    int _pitch; // MIDI pitch
+} ms_AuditionStopNoteEvent;
+
 typedef ms_Result (* ms_init)();
 typedef int (* ms_contains_instrument)(const char* mpe_id, const char* musicxml_id);
 typedef ms_InstrumentList (* ms_get_instrument_list)();
@@ -155,6 +167,11 @@ typedef ms_Result (* ms_MuseSampler_add_track_dynamics_event)(ms_MuseSampler ms,
 typedef int (* ms_MuseSampler_is_ranged_articulation)(ms_NoteArticulation);
 typedef ms_Result (* ms_MuseSampler_add_track_event_range_start)(ms_MuseSampler, ms_Track, int voice, ms_NoteArticulation);
 typedef ms_Result (* ms_MuseSampler_add_track_event_range_end)(ms_MuseSampler, ms_Track, int voice, ms_NoteArticulation);
+
+typedef ms_Result (* ms_MuseSampler_start_audition_mode)(ms_MuseSampler ms);
+typedef ms_Result (* ms_MuseSampler_stop_audition_mode)(ms_MuseSampler ms);
+typedef ms_Result (* ms_MuseSampler_start_note)(ms_MuseSampler ms, ms_Track track, ms_AuditionStartNoteEvent evt);
+typedef ms_Result (* ms_MuseSampler_stop_note)(ms_MuseSampler ms, ms_Track track, ms_AuditionStopNoteEvent evt);
 
 typedef ms_Result (* ms_MuseSampler_process)(ms_MuseSampler, ms_OutputBuffer, long long micros);
 typedef void (* ms_MuseSampler_set_position)(ms_MuseSampler, long long micros);
