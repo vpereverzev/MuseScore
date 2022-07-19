@@ -86,18 +86,39 @@ struct MuseSamplerLibHandler
 
     ms_Result startAuditionMode(ms_MuseSampler ms) { return ms_MuseSampler_start_audition_mode(ms); }
     ms_Result stopAuditionMode(ms_MuseSampler ms) { return ms_MuseSampler_stop_audition_mode(ms); }
-    ms_Result startNote(ms_MuseSampler ms, ms_Track track, ms_AuditionStartNoteEvent evt)
+    ms_Result startAuditionNote(ms_MuseSampler ms, ms_Track track, ms_AuditionStartNoteEvent evt)
     {
-        return ms_MuseSampler_start_note(ms, track, evt);
+        return ms_MuseSampler_start_audition_note(ms, track, evt);
     }
-    ms_Result stopNote(ms_MuseSampler ms, ms_Track track, ms_AuditionStopNoteEvent evt)
+    ms_Result stopAuditionNote(ms_MuseSampler ms, ms_Track track, ms_AuditionStopNoteEvent evt)
     {
-        return ms_MuseSampler_stop_note(ms, track, evt);
+        return ms_MuseSampler_stop_audition_note(ms, track, evt);
     }
 
-    void setPosition(ms_MuseSampler ms, long long micros) { return ms_MuseSampler_set_position(ms, micros); }
+    ms_Result startLivePlayMode(ms_MuseSampler ms) { return ms_MuseSampler_start_liveplay_mode(ms); }
+    ms_Result stopLivePlayMode(ms_MuseSampler ms) { return ms_MuseSampler_stop_liveplay_mode(ms); }
+    ms_Result startLivePlayNote(ms_MuseSampler ms, ms_Track track, ms_LivePlayStartNoteEvent evt)
+    {
+        return ms_MuseSampler_start_liveplay_note(ms, track, evt);
+    }
+    ms_Result stopLivePlayNote(ms_MuseSampler ms, ms_Track track, ms_LivePlayStopNoteEvent evt)
+    {
+        return ms_MuseSampler_stop_liveplay_note(ms, track, evt);
+    }
+
+    ms_Result startOfflineMode(ms_MuseSampler ms, double sample_rate)
+    {
+        return ms_MuseSampler_start_offline_mode(ms, sample_rate); 
+    }
+    ms_Result stopOfflineMode(ms_MuseSampler ms) { return ms_MuseSampler_stop_offline_mode(ms); }
+    ms_Result processOffline(ms_MuseSampler ms, ms_OutputBuffer buff, long long samples)
+    {
+        return ms_MuseSampler_process_offline(ms, buff, samples);
+    }
+
+    void setPosition(ms_MuseSampler ms, long long samples) { return ms_MuseSampler_set_position(ms, samples); }
     void setPlaying(ms_MuseSampler ms, bool playing) { return ms_MuseSampler_set_playing(ms, playing ? 1 : 0); }
-    ms_Result process(ms_MuseSampler ms, ms_OutputBuffer buff, long long micros) { return ms_MuseSampler_process(ms, buff, micros); }
+    ms_Result process(ms_MuseSampler ms, ms_OutputBuffer buff, long long samples) { return ms_MuseSampler_process(ms, buff, samples); }
 
     MuseSamplerLibHandler(const char* /*path*/)
     {
@@ -144,8 +165,17 @@ struct MuseSamplerLibHandler
 
     ms_MuseSampler_start_audition_mode startAuditionMode = nullptr;
     ms_MuseSampler_stop_audition_mode stopAuditionMode = nullptr;
-    ms_MuseSampler_start_note startNote = nullptr;
-    ms_MuseSampler_stop_note stopNote = nullptr;
+    ms_MuseSampler_start_audition_note startAuditionNote = nullptr;
+    ms_MuseSampler_stop_audition_note stopAuditionNote = nullptr;
+
+    ms_MuseSampler_start_liveplay_mode startLivePlayMode = nullptr;
+    ms_MuseSampler_stop_liveplay_mode stopLivePlayMode = nullptr;
+    ms_MuseSampler_start_liveplay_note startLivePlayNote = nullptr;
+    ms_MuseSampler_stop_liveplay_note stopLivePlayNote = nullptr;
+
+    ms_MuseSampler_start_offline_mode startOfflineMode = nullptr;
+    ms_MuseSampler_stop_offline_mode stopOfflineMode = nullptr;
+    ms_MuseSampler_process_offline processOffline = nullptr;
 
     ms_MuseSampler_set_position setPosition = nullptr;
     ms_MuseSampler_set_playing setPlaying = nullptr;
@@ -192,8 +222,17 @@ struct MuseSamplerLibHandler
 
         startAuditionMode = (ms_MuseSampler_start_audition_mode)dlsym(m_lib, "ms_MuseSampler_start_audition_mode");
         stopAuditionMode = (ms_MuseSampler_stop_audition_mode)dlsym(m_lib, "ms_MuseSampler_stop_audition_mode");
-        startNote = (ms_MuseSampler_start_note)dlsym(m_lib, "startNote");
-        stopNote = (ms_MuseSampler_stop_note)dlsym(m_lib, "stopNote");
+        startAuditionNote = (ms_MuseSampler_start_audition_note)dlsym(m_lib, "ms_MuseSampler_start_audition_note");
+        stopAuditionNote = (ms_MuseSampler_stop_audition_note)dlsym(m_lib, "ms_MuseSampelr_stop_audition_note");
+
+        startLivePlayMode = (ms_MuseSampler_start_liveplay_mode)dlsym(m_lib, "ms_MuseSampler_start_liveplay_mode");
+        stopLivePlayMode = (ms_MuseSampler_stop_liveplay_mode)dlsym(m_lib, "ms_MuseSampler_stop_liveplay_mode");
+        startLivePlayNote = (ms_MuseSampler_start_liveplay_note)dlsym(m_lib, "ms_MuseSampler_start_liveplay_note");
+        stopLivePlayNote = (ms_MuseSampler_stop_liveplay_note)dlsym(m_lib, "ms_MuseSampelr_stop_liveplay_note");
+
+        startOfflineMode = (ms_MuseSampler_start_offline_mode)dlsym(m_lib, "ms_MuseSampler_start_offline_mode");
+        stopOfflineMode = (ms_MuseSampler_stop_offline_mode)dlsym(m_lib, "ms_MuseSampler_stop_offline_mode");
+        processOffline = (ms_MuseSampler_process_offline)dlsym(m_lib, "ms_MuseSampler_process_offline");
 
         setPosition = (ms_MuseSampler_set_position)dlsym(m_lib, "ms_MuseSampler_set_position");
         setPlaying = (ms_MuseSampler_set_playing)dlsym(m_lib, "ms_MuseSampler_set_playing");
@@ -242,8 +281,15 @@ struct MuseSamplerLibHandler
                && addTrackEventRangeEnd
                && startAuditionMode
                && stopAuditionMode
-               && startNote
-               && stopNote
+               && startAuditionNote
+               && stopAuditionNote
+               && startLivePlayMode
+               && stopLivePlayMode
+               && startLivePlayNote
+               && stopLivePlayNote
+               && startOfflineMode
+               && stopOfflineMode
+               && processOffline
                && process;
     }
 
@@ -272,8 +318,15 @@ private:
                << "\n ms_MuseSampler_add_track_note_event - " << reinterpret_cast<uint64_t>(addNoteEvent)
                << "\n ms_MuseSampler_start_audition_mode - " << reinterpret_cast<uint64_t>(startAuditionMode)
                << "\n ms_MuseSampler_stop_audition_mode - " << reinterpret_cast<uint64_t>(stopAuditionMode)
-               << "\n ms_MuseSampler_start_note - " << reinterpret_cast<uint64_t>(startNote)
-               << "\n ms_MuseSampler_stop_note - " << reinterpret_cast<uint64_t>(stopNote)
+               << "\n ms_MuseSampler_start_audition_note - " << reinterpret_cast<uint64_t>(startAuditionNote)
+               << "\n ms_MuseSampler_stop_audition_note - " << reinterpret_cast<uint64_t>(stopAuditionNote)
+               << "\n ms_MuseSampler_start_liveplay_mode - " << reinterpret_cast<uint64_t>(startLivePlayMode)
+               << "\n ms_MuseSampler_stop_liveplay_mode - " << reinterpret_cast<uint64_t>(stopLivePlayMode)
+               << "\n ms_MuseSampler_start_liveplay_note - " << reinterpret_cast<uint64_t>(startLivePlayNote)
+               << "\n ms_MuseSampler_stop_liveplay_note - " << reinterpret_cast<uint64_t>(stopLivePlayNote)
+               << "\n ms_MuseSampler_start_offline_mode - " << reinterpret_cast<uint64_t>(startOfflineMode)
+               << "\n ms_MuseSampler_stop_offline_mode - " << reinterpret_cast<uint64_t>(stopOfflineMode)
+               << "\n ms_MuseSampler_process_offline - " << reinterpret_cast<uint64_t>(processOffline)
                << "\n ms_MuseSampler_set_position - " << reinterpret_cast<uint64_t>(setPosition)
                << "\n ms_MuseSampler_set_playing - " << reinterpret_cast<uint64_t>(setPlaying)
                << "\n ms_MuseSampler_process - " << reinterpret_cast<uint64_t>(process);
