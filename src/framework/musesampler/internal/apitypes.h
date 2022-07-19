@@ -191,7 +191,7 @@ typedef ms_Result (* ms_MuseSampler_stop_liveplay_note)(ms_MuseSampler ms, ms_Tr
 
 typedef ms_Result (* ms_MuseSampler_start_offline_mode)(ms_MuseSampler ms, double sample_rate);
 typedef ms_Result (* ms_MuseSampler_stop_offline_mode)(ms_MuseSampler ms);
-typedef ms_Result (* ms_MuseSampler_process_offline)(ms_MuseSampler ms, ms_OutputBuffer buffer, long long samples);
+typedef ms_Result (* ms_MuseSampler_process_offline)(ms_MuseSampler ms, ms_OutputBuffer buffer);
 
 typedef ms_Result (* ms_MuseSampler_process)(ms_MuseSampler, ms_OutputBuffer, long long samples);
 typedef void (* ms_MuseSampler_set_position)(ms_MuseSampler, long long samples);

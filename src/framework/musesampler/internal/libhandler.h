@@ -111,9 +111,9 @@ struct MuseSamplerLibHandler
         return ms_MuseSampler_start_offline_mode(ms, sample_rate); 
     }
     ms_Result stopOfflineMode(ms_MuseSampler ms) { return ms_MuseSampler_stop_offline_mode(ms); }
-    ms_Result processOffline(ms_MuseSampler ms, ms_OutputBuffer buff, long long samples)
+    ms_Result processOffline(ms_MuseSampler ms, ms_OutputBuffer buff)
     {
-        return ms_MuseSampler_process_offline(ms, buff, samples);
+        return ms_MuseSampler_process_offline(ms, buff);
     }
 
     void setPosition(ms_MuseSampler ms, long long samples) { return ms_MuseSampler_set_position(ms, samples); }
