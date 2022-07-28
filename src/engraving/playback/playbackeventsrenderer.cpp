@@ -125,7 +125,8 @@ void PlaybackEventsRenderer::renderChordSymbol(const Harmony* chordSymbol,
                                            voiceIdx,
                                            pitchLevel,
                                            dynamicLevelFromType(mpe::DynamicType::Natural),
-                                           emptyArticulations));
+                                           emptyArticulations,
+                                           bps.val));
     }
 }
 
