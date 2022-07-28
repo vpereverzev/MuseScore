@@ -24,6 +24,7 @@
 
 #include <cstring>
 
+#include "musesamplerutils.h"
 #include "realfn.h"
 #include "soundid_stringify.h"
 
@@ -184,6 +185,15 @@ bool MuseSamplerWrapper::isValid() const
 
 void MuseSamplerWrapper::setupSound(const mpe::PlaybackSetupData& setupData)
 {
+    // Check by exact info:
+    if (auto unique_id = getMuseInstrumentUniqueIdFromId(params().resourceMeta.id); unique_id.has_value()) {
+        m_track = m_samplerLib->addTrack(m_sampler, *unique_id);
+        if (m_track != nullptr)
+            return;
+        LOGE() << "Could not add instrument with ID of " << *unique_id;
+    }
+
+    LOGE() << "Something went wrong; falling back to MPE info.";
     IF_ASSERT_FAILED(m_samplerLib) {
         return;
     }
@@ -211,11 +221,13 @@ void MuseSamplerWrapper::setupSound(const mpe::PlaybackSetupData& setupData)
     {
         internalId = m_samplerLib->getInstrumentId(instrument);
         const char* internalName = m_samplerLib->getInstrumentName(instrument);
+        const char* internalCategory = m_samplerLib->getInstrumentCategory(instrument);
         const char* instrumentPack = m_samplerLib->getInstrumentPackage(instrument);
         const char* musicXmlId = m_samplerLib->getMusicXmlSoundId(instrument);
 
         LOGD() << internalId
                << ": " << instrumentPack
+               << ": " << internalCategory
                << ": " << internalName
                << " - " << musicXmlId;
 

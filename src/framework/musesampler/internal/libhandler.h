@@ -41,6 +41,7 @@ struct MuseSamplerLibHandler
     {
         return ms_contains_instrument(mpe_id, musicxml) == 1;
     }
+    int getMatchingInstrumentId(const char* pack, const char* name) { reutrn ms_get_matching_instrument_id(pack, name); }
     ms_InstrumentList getInstrumentList() { return ms_get_instrument_list(); }
     ms_InstrumentList getMatchingInstrumentList(const char* mpe_id, const char* musicxml)
     {
@@ -49,6 +50,7 @@ struct MuseSamplerLibHandler
     ms_InstrumentInfo getNextInstrument(ms_InstrumentList instrument_list) { return ms_InstrumentList_get_next(instrument_list); }
     int getInstrumentId(ms_InstrumentInfo instrument) { return ms_Instrument_get_id(instrument); }
     const char* getInstrumentName(ms_InstrumentInfo instrument) { return ms_Instrument_get_name(instrument); }
+    const char* getInstrumentCategory(ms_InstrumentInfo instrument) { return ms_Instrument_get_category(instrument); }
     const char* getInstrumentPackage(ms_InstrumentInfo instrument) { return ms_Instrument_get_package(instrument); }
     const char* getMusicXmlSoundId(ms_InstrumentInfo instrument) { return ms_Instrument_get_musicxml_sound(instrument); }
     const char* getMpeSoundId(ms_InstrumentInfo instrument) { return ms_Instrument_get_mpe_sound(instrument); }
@@ -104,11 +106,13 @@ struct MuseSamplerLibHandler
     ms_init initLib = nullptr;
     ms_contains_instrument containsInstrument = nullptr;
 
+    ms_get_matching_instrument_id getMatchingInstrumentId = nullptr;
     ms_get_instrument_list getInstrumentList = nullptr;
     ms_get_matching_instrument_list getMatchingInstrumentList = nullptr;
     ms_InstrumentList_get_next getNextInstrument = nullptr;
     ms_Instrument_get_id getInstrumentId = nullptr;
     ms_Instrument_get_name getInstrumentName = nullptr;
+    ms_Instrument_get_category getInstrumentCategory = nullptr;
     ms_Instrument_get_package getInstrumentPackage = nullptr;
     ms_Instrument_get_musicxml_sound getMusicXmlSoundId = nullptr;
     ms_Instrument_get_mpe_sound getMpeSoundId = nullptr;
@@ -146,11 +150,13 @@ struct MuseSamplerLibHandler
 
         initLib = (ms_init)dlsym(m_lib, "ms_init");
         containsInstrument = (ms_contains_instrument)dlsym(m_lib, "ms_contains_instrument");
+        getMatchingInstrumentId = (ms_get_matching_instrument_id)dlsym(m_lib, "ms_get_matching_instrument_id");
         getInstrumentList = (ms_get_instrument_list)dlsym(m_lib, "ms_get_instrument_list");
         getMatchingInstrumentList = (ms_get_matching_instrument_list)dlsym(m_lib, "ms_get_matching_instrument_list");
         getNextInstrument = (ms_InstrumentList_get_next)dlsym(m_lib, "ms_InstrumentList_get_next");
         getInstrumentId = (ms_Instrument_get_id)dlsym(m_lib, "ms_Instrument_get_id");
         getInstrumentName = (ms_Instrument_get_name)dlsym(m_lib, "ms_Instrument_get_name");
+        getInstrumentCategory = (ms_Instrument_get_category)dlsym(m_lib, "ms_Instrument_get_category");
         getInstrumentPackage = (ms_Instrument_get_package)dlsym(m_lib, "ms_Instrument_get_package");
         getMusicXmlSoundId = (ms_Instrument_get_musicxml_sound)dlsym(m_lib, "ms_Instrument_get_musicxml_sound");
         getMpeSoundId = (ms_Instrument_get_mpe_sound)dlsym(m_lib, "ms_Instrument_get_mpe_sound");
@@ -195,11 +201,13 @@ struct MuseSamplerLibHandler
         return m_lib
                && initLib
                && containsInstrument
+               && getMatchingInstrumentId
                && getInstrumentList
                && getMatchingInstrumentList
                && getNextInstrument
                && getInstrumentId
                && getInstrumentName
+               && getInstrumentCategory
                && getInstrumentPackage
                && getMusicXmlSoundId
                && getMpeSoundId
@@ -227,11 +235,13 @@ private:
     {
         LOGI() << "MuseSampler API status:"
                << "\n ms_contains_instrument -" << reinterpret_cast<uint64_t>(containsInstrument)
+               << "\n ms_get_matching_instrument_id -" << reinterpret_cast<uint64_t>(getMatchingInstrumentId)
                << "\n ms_get_instrument_list -" << reinterpret_cast<uint64_t>(getInstrumentList)
                << "\n ms_get_matching_instrument_list -" << reinterpret_cast<uint64_t>(getMatchingInstrumentList)
                << "\n ms_InstrumentList_get_next - " << reinterpret_cast<uint64_t>(getNextInstrument)
                << "\n ms_Instrument_get_id - " << reinterpret_cast<uint64_t>(getInstrumentId)
                << "\n ms_Instrument_get_name - " << reinterpret_cast<uint64_t>(getInstrumentName)
+               << "\n ms_Instrument_get_category - " << reinterpret_cast<uint64_t>(getInstrumentCategory)
                << "\n ms_Instrument_get_package - " << reinterpret_cast<uint64_t>(getInstrumentPackage)
                << "\n ms_Instrument_get_musicxml_sound - " << reinterpret_cast<uint64_t>(getMusicXmlSoundId)
                << "\n ms_Instrument_get_mpe_sound - " << reinterpret_cast<uint64_t>(getMpeSoundId)

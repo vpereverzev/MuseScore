@@ -24,6 +24,7 @@
 
 #include "log.h"
 
+#include "musesamplerutils.h"
 #include "musesamplerwrapper.h"
 #include "soundid_stringify.h"
 
@@ -47,28 +48,29 @@ ISynthesizerPtr MuseSamplerResolver::resolveSynth(const audio::TrackId trackId, 
 
 bool MuseSamplerResolver::hasCompatibleResources(const audio::PlaybackSetupData& setup) const
 {
-    if (!m_libHandler) {
-        return false;
-    }
-
-    if (!setup.musicXmlSoundId.has_value()) {
-        return false;
-    }
-
-    auto mpe_id = mpe::MpeIdToString(setup.id, setup.category, setup.subCategorySet);
-    return m_libHandler->containsInstrument(mpe_id.c_str(), setup.musicXmlSoundId->c_str());
+    return true; // We provide a full list for everything...
 }
 
 AudioResourceMetaList MuseSamplerResolver::resolveResources() const
 {
-    static AudioResourceMetaList result {
+    AudioResourceMetaList result;
+
+    auto instrumentList = m_libHandler->getInstrumentList();
+    while (auto instrument = m_libHandler->getNextInstrument(instrumentList))
+    {
+        int uniqueId = m_libHandler->getInstrumentId(instrument);
+        const char* internalName = m_libHandler->getInstrumentName(instrument);
+        const char* internalCategory = m_libHandler->getInstrumentCategory(instrument);
+        const char* instrumentPack = m_libHandler->getInstrumentPackage(instrument);
+
+        result.push_back(
         {
-            "Muse Sounds",
-            AudioResourceType::MuseSamplerSoundPack,
-            "Muse",
+            buildMuseInstrumentId(internalCategory, internalName, uniqueId), // id
+            AudioResourceType::MuseSamplerSoundPack, // type
+            instrumentPack, // vendor
             /*hasNativeEditorSupport*/ false
-        }
-    };
+        });
+    }
 
     return result;
 }
