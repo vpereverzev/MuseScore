@@ -47,6 +47,8 @@ ISynthesizerPtr MuseSamplerResolver::resolveSynth(const audio::TrackId /*trackId
 
 bool MuseSamplerResolver::hasCompatibleResources(const audio::PlaybackSetupData& setup) const
 {
+    return true;
+    /*
     if (!m_libHandler) {
         return false;
     }
@@ -54,7 +56,7 @@ bool MuseSamplerResolver::hasCompatibleResources(const audio::PlaybackSetupData&
     ByteArray idStr = setup.toString().toUtf8();
 
     return m_libHandler->containsInstrument(idStr.constChar(),
-                                            setup.musicXmlSoundId->c_str());
+                                            setup.musicXmlSoundId->c_str());*/
 }
 
 AudioResourceMetaList MuseSamplerResolver::resolveResources() const
