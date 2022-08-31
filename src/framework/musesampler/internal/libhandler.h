@@ -174,8 +174,6 @@ struct MuseSamplerLibHandler
     ms_MuseSampler_add_track_event_range_start addTrackEventRangeStart = nullptr;
     ms_MuseSampler_add_track_event_range_end addTrackEventRangeEnd = nullptr;
 
-    ms_MuseSampler_start_audition_mode startAuditionMode = nullptr;
-    ms_MuseSampler_stop_audition_mode stopAuditionMode = nullptr;
     ms_MuseSampler_start_audition_note startAuditionNote = nullptr;
     ms_MuseSampler_stop_audition_note stopAuditionNote = nullptr;
 
@@ -234,8 +232,6 @@ struct MuseSamplerLibHandler
         addTrackEventRangeStart = (ms_MuseSampler_add_track_event_range_start)dlsym(m_lib, "ms_MuseSampler_add_track_event_range_start");
         addTrackEventRangeEnd = (ms_MuseSampler_add_track_event_range_end)dlsym(m_lib, "ms_MuseSampler_add_track_event_range_end");
 
-        startAuditionMode = (ms_MuseSampler_start_audition_mode)dlsym(m_lib, "ms_MuseSampler_start_audition_mode");
-        stopAuditionMode = (ms_MuseSampler_stop_audition_mode)dlsym(m_lib, "ms_MuseSampler_stop_audition_mode");
         startAuditionNote = (ms_MuseSampler_start_audition_note)dlsym(m_lib, "ms_MuseSampler_start_audition_note");
         stopAuditionNote = (ms_MuseSampler_stop_audition_note)dlsym(m_lib, "ms_MuseSampler_stop_audition_note");
 
@@ -296,8 +292,6 @@ struct MuseSamplerLibHandler
                && isRangedArticulation
                && addTrackEventRangeStart
                && addTrackEventRangeEnd
-               && startAuditionMode
-               && stopAuditionMode
                && startAuditionNote
                && stopAuditionNote
                && startLivePlayMode
@@ -336,8 +330,6 @@ private:
                << "\n ms_MuseSampler_finalize_track - " << reinterpret_cast<uint64_t>(finalizeTrack)
                << "\n ms_MuseSampler_add_track_dynamics_event - " << reinterpret_cast<uint64_t>(addDynamicsEvent)
                << "\n ms_MuseSampler_add_track_note_event - " << reinterpret_cast<uint64_t>(addNoteEvent)
-               << "\n ms_MuseSampler_start_audition_mode - " << reinterpret_cast<uint64_t>(startAuditionMode)
-               << "\n ms_MuseSampler_stop_audition_mode - " << reinterpret_cast<uint64_t>(stopAuditionMode)
                << "\n ms_MuseSampler_start_audition_note - " << reinterpret_cast<uint64_t>(startAuditionNote)
                << "\n ms_MuseSampler_stop_audition_note - " << reinterpret_cast<uint64_t>(stopAuditionNote)
                << "\n ms_MuseSampler_start_liveplay_mode - " << reinterpret_cast<uint64_t>(startLivePlayMode)

@@ -265,9 +265,6 @@ void MuseSamplerWrapper::setIsActive(bool arg)
 
     if (!isActive()) {
         setCurrentPosition(m_currentPosition);
-        m_samplerLib->startAuditionMode(m_sampler);
-    } else {
-        m_samplerLib->stopAuditionMode(m_sampler);
     }
 
     LOGI() << "Toggled playing status, isPlaying: " << arg;
