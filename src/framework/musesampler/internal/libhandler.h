@@ -191,6 +191,7 @@ struct MuseSamplerLibHandler
     ms_MuseSampler_set_position setPosition = nullptr;
     ms_MuseSampler_set_playing setPlaying = nullptr;
     ms_MuseSampler_process process = nullptr;
+    ms_MuseSampler_all_notes_off allNotesOff = nullptr;
 
     MuseSamplerLibHandler(const char* path)
     {
@@ -250,6 +251,7 @@ struct MuseSamplerLibHandler
         setPosition = (ms_MuseSampler_set_position)dlsym(m_lib, "ms_MuseSampler_set_position");
         setPlaying = (ms_MuseSampler_set_playing)dlsym(m_lib, "ms_MuseSampler_set_playing");
         process = (ms_MuseSampler_process)dlsym(m_lib, "ms_MuseSampler_process");
+        allNotesOff = (ms_MuseSampler_all_notes_off)dlsym(m_lib, "ms_MuseSampler_all_notes_off");
 
         initLib();
     }
@@ -305,7 +307,8 @@ struct MuseSamplerLibHandler
                && startOfflineMode
                && stopOfflineMode
                && processOffline
-               && process;
+               && process
+               && allNotesOff;
     }
 
 private:
@@ -346,7 +349,8 @@ private:
                << "\n ms_MuseSampler_process_offline - " << reinterpret_cast<uint64_t>(processOffline)
                << "\n ms_MuseSampler_set_position - " << reinterpret_cast<uint64_t>(setPosition)
                << "\n ms_MuseSampler_set_playing - " << reinterpret_cast<uint64_t>(setPlaying)
-               << "\n ms_MuseSampler_process - " << reinterpret_cast<uint64_t>(process);
+               << "\n ms_MuseSampler_process - " << reinterpret_cast<uint64_t>(process)
+               << "\n ms_MuseSampler_all_notes_off - " << reinterpret_cast<uint64_t>(allNotesOff);
     }
 
     MuseSamplerLib m_lib = nullptr;

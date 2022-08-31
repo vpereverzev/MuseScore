@@ -41,6 +41,10 @@ MuseSamplerWrapper::MuseSamplerWrapper(MuseSamplerLibHandlerPtr samplerLib, cons
     }
 
     m_samplerLib->initLib();
+
+    m_sequencer.flushedOffStreamEvents().onNotify(this, [this]() {
+        revokePlayingNotes();
+    });
 }
 
 MuseSamplerWrapper::~MuseSamplerWrapper()
@@ -305,5 +309,11 @@ void MuseSamplerWrapper::extractOutputSamples(audio::samples_t samples, float* o
             float sample = m_bus._channels[audioChannelIndex][sampleIndex];
             output[sampleIndex * m_bus._num_channels + audioChannelIndex] += sample;
         }
+    }
+}
+
+void MuseSamplerWrapper::revokePlayingNotes() {
+    if (m_samplerLib) {
+        m_samplerLib->allNotesOff(m_sampler);
     }
 }

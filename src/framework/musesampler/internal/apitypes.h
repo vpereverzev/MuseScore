@@ -201,4 +201,6 @@ typedef ms_Result (* ms_MuseSampler_process)(ms_MuseSampler, ms_OutputBuffer, lo
 typedef void (* ms_MuseSampler_set_position)(ms_MuseSampler, long long samples);
 typedef void (* ms_MuseSampler_set_playing)(ms_MuseSampler, int playing);
 
+typedef ms_Result (* ms_MuseSampler_all_notes_off)(ms_MuseSampler);
+
 #endif // MU_MUSESAMPLER_APITYPES_H

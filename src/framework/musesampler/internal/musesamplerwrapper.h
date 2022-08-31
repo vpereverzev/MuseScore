@@ -48,6 +48,8 @@ public:
     void flushSound() override;
     bool isValid() const override;
 
+    void revokePlayingNotes() override;
+
 protected:
     void setupSound(const mpe::PlaybackSetupData& setupData) override;
     void setupEvents(const mpe::PlaybackData& playbackData) override;
