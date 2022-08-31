@@ -113,9 +113,9 @@ samples_t MuseSamplerWrapper::process(float* buffer, audio::samples_t samplesPer
     if (m_samplerLib->process(m_sampler, m_bus, m_currentPosition) != ms_Result_OK) {
         return 0;
     }
+    extractOutputSamples(samplesPerChannel, buffer);
 
     if (isActive()) {
-        extractOutputSamples(samplesPerChannel, buffer);
         m_currentPosition += samplesPerChannel;
     }
 
