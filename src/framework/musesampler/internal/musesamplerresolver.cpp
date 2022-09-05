@@ -55,7 +55,7 @@ bool MuseSamplerResolver::hasCompatibleResources(const audio::PlaybackSetupData&
     if (!m_libHandler) {
         return false;
     }
-    return false;
+    return true;
     /*
 
     ByteArray idStr = setup.toString().toUtf8();
